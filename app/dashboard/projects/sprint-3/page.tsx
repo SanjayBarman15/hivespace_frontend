@@ -45,6 +45,15 @@ const PRIORITIES = {
   normal: "#71717A", // zinc-500
 };
 
+const ASSIGNEE_COLORS: Record<string, string> = {
+  "MV": "bg-amber-600",
+  "RK": "bg-blue-600",
+  "DK": "bg-green-600",
+  "SA": "bg-red-600",
+  "PL": "bg-purple-600",
+  "RS": "bg-indigo-600",
+};
+
 type Priority = keyof typeof PRIORITIES;
 
 interface Task {
@@ -175,7 +184,7 @@ export default function SprintThreePage() {
           </div>
           <div className="flex items-center gap-4">
             <div className="relative h-1.5 flex-1 max-w-[400px] bg-zinc-700 rounded-full overflow-hidden">
-              <div className="absolute top-0 left-0 h-full bg-[#7C5CFC] rounded-full" style={{ width: '68%' }} />
+              <div className="absolute top-0 left-0 h-full bg-[#7C5CFC] rounded-full transition-all" style={{ width: '68%' }} />
             </div>
             <span className="text-[10px] font-medium text-zinc-400">17/25 tasks complete</span>
           </div>
@@ -183,14 +192,14 @@ export default function SprintThreePage() {
 
         {/* --- KANBAN BOARD --- */}
         <ScrollArea className="flex-1 w-full whitespace-nowrap px-8 pb-8">
-          <div className="flex gap-4 h-full" style={{ width: 'max-content' }}>
+          <div className="flex gap-4 h-full min-h-[calc(100vh-160px)]" style={{ width: 'max-content' }}>
             {COLUMNS.map((col) => (
-              <div key={col.name} className="flex flex-col w-[280px] shrink-0 bg-[#1B1B1D] rounded-lg">
+              <div key={col.name} className="flex flex-col w-[280px] shrink-0 bg-[#1B1B1D] rounded-lg h-full overflow-hidden">
                 
                 {/* Column Header */}
                 <div className="flex items-center justify-between p-3 shrink-0">
                   <div className="flex items-center">
-                    <span className={`text-sm font-medium ${col.accent ? 'text-[#7C5CFC]' : 'text-[#E5E1E4]'}`}>
+                    <span className={`text-sm font-medium ${col.name === 'In Progress' ? 'text-violet-400' : col.accent ? 'text-[#7C5CFC]' : 'text-[#E5E1E4]'}`}>
                       {col.name}
                     </span>
                     <span className="text-xs text-zinc-500 ml-2">{col.count}</span>
@@ -218,6 +227,12 @@ export default function SprintThreePage() {
                 </div>
               </div>
             ))}
+
+            {/* Add Column Button */}
+            <button className="flex h-10 w-48 shrink-0 items-center justify-center gap-2 rounded-lg border border-dashed border-zinc-700 text-xs text-zinc-500 hover:border-zinc-600 hover:text-zinc-400 transition-all mt-2.5">
+              <Plus className="h-3.5 w-3.5" />
+              <span>Add column</span>
+            </button>
           </div>
           <ScrollBar orientation="horizontal" className="bg-zinc-900/50" />
         </ScrollArea>
@@ -339,7 +354,6 @@ export default function SprintThreePage() {
                 <span className="text-[10px] font-bold text-zinc-500 tracking-widest uppercase">Activity</span>
                 <div className="relative pl-7 flex flex-col gap-6">
                   <div className="absolute left-3 top-2 bottom-0 w-[1px] bg-zinc-800" />
-                  
                   <div className="relative flex flex-col gap-1">
                     <Avatar className="absolute -left-7 top-0 h-6 w-6 ring-4 ring-[#1B1B1D]">
                       <AvatarFallback className="bg-zinc-800 text-[9px]">DK</AvatarFallback>
@@ -419,7 +433,7 @@ function TaskCard({ task, isMuted, onClick }: { task: Task; isMuted?: boolean; o
       </div>
 
       {/* Row 2: Title */}
-      <p className={`text-sm leading-snug font-medium line-clamp-2 ${isDone ? 'line-through text-zinc-500' : 'text-[#E5E1E4]'}`}>
+      <p className={`text-sm leading-snug font-medium line-clamp-2 overflow-hidden text-ellipsis ${isDone ? 'line-through text-zinc-500' : 'text-[#E5E1E4]'}`}>
         {task.title}
       </p>
 
@@ -427,12 +441,12 @@ function TaskCard({ task, isMuted, onClick }: { task: Task; isMuted?: boolean; o
       {task.labels && task.labels.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
           {task.labels.slice(0, 2).map(label => (
-            <Badge key={label} className="bg-zinc-800 text-zinc-400 border-zinc-700/50 h-[18px] px-1.5 font-normal text-[9px] rounded-sm hover:bg-zinc-800">
+            <Badge key={label} className="bg-zinc-800 text-zinc-400 border border-zinc-700 h-5 px-1.5 py-0.5 font-normal text-xs rounded-sm hover:bg-zinc-800 shadow-none">
               {label}
             </Badge>
           ))}
           {task.labels.length > 2 && (
-            <Badge className="bg-zinc-800 text-zinc-400 border-zinc-700/50 h-[18px] px-1.5 font-normal text-[9px] rounded-sm hover:bg-zinc-800">
+            <Badge className="bg-zinc-800 text-zinc-400 border border-zinc-700 h-5 px-1.5 py-0.5 font-normal text-xs rounded-sm hover:bg-zinc-800 shadow-none">
               +{task.labels.length - 2} more
             </Badge>
           )}
@@ -456,32 +470,17 @@ function TaskCard({ task, isMuted, onClick }: { task: Task; isMuted?: boolean; o
           )}
         </div>
 
-        {/* Assignee/Reviewers Stack */}
-        <div className="flex items-center shrink-0">
+        {/* Assignee Avatar - Positioned Bottom Right */}
+        <div className="absolute bottom-3 right-3 shrink-0">
           <TooltipProvider delayDuration={200}>
-            {task.reviewers ? (
-              <div className="flex items-center">
-                {task.reviewers.map((rev, i) => (
-                  <Tooltip key={rev.initials}>
-                    <TooltipTrigger asChild>
-                      <Avatar className={`h-5 w-5 ring-2 ring-[#272629] -ml-1.5 first:ml-0 bg-zinc-800 border border-zinc-700/50`}>
-                        <AvatarFallback className="text-[8px] font-bold text-zinc-300">{rev.initials}</AvatarFallback>
-                      </Avatar>
-                    </TooltipTrigger>
-                    <TooltipContent className="bg-black text-[10px] border-zinc-800">{rev.name}</TooltipContent>
-                  </Tooltip>
-                ))}
-              </div>
-            ) : (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Avatar className="h-5 w-5 bg-zinc-800 border border-zinc-700/50">
-                    <AvatarFallback className="text-[8px] font-bold text-zinc-300">{task.assignee.initials}</AvatarFallback>
-                  </Avatar>
-                </TooltipTrigger>
-                <TooltipContent className="bg-black text-[10px] border-zinc-800">{task.assignee.name}</TooltipContent>
-              </Tooltip>
-            )}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Avatar className={`h-6 w-6 rounded-full border-none ${ASSIGNEE_COLORS[task.assignee.initials] || 'bg-zinc-800'}`}>
+                  <AvatarFallback className="bg-transparent text-white text-xs font-bold">{task.assignee.initials}</AvatarFallback>
+                </Avatar>
+              </TooltipTrigger>
+              <TooltipContent className="bg-black text-[10px] border-zinc-800">{task.assignee.name}</TooltipContent>
+            </Tooltip>
           </TooltipProvider>
         </div>
       </div>

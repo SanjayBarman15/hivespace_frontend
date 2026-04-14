@@ -255,12 +255,14 @@ function SubItem({ icon: Icon, label, href, isActive }: { icon: any; label: stri
     <Link 
       href={href}
       className={cn(
-        "flex h-7 items-center gap-2 pl-8 pr-2 transition-colors",
-        isActive ? "text-white bg-zinc-800/60 rounded-md" : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/30"
+        "flex h-7 items-center gap-2 pl-8 pr-2 transition-colors rounded-md no-underline",
+        isActive 
+          ? "text-white bg-zinc-800/60" 
+          : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40"
       )}
     >
       <Icon className="h-3 w-3 text-zinc-500" strokeWidth={1.5} />
-      <span className="text-xs font-medium">{label}</span>
+      <span className="text-xs font-normal">{label}</span>
     </Link>
   );
 }

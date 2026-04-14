@@ -14,12 +14,12 @@ export default function DashboardLayout({
   const isDocs = pathname?.startsWith("/dashboard/docs");
 
   return (
-    <div className="flex min-h-screen bg-[#0E0E10] text-[#E5E1E4]">
+    <div className="flex h-screen overflow-hidden bg-[#0E0E10] text-[#E5E1E4]">
       <NavRail />
       {!isDocs && <WorkspaceSidebar />}
       <main className={cn(
-        "flex-1 transition-all duration-300", 
-        isDocs ? "ml-[56px]" : "ml-[276px]"
+        "flex-1 transition-all duration-300 min-w-0 overflow-hidden", 
+        isDocs ? "pl-[56px]" : "pl-[276px]"
       )}>
         {children}
       </main>

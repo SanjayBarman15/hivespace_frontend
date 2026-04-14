@@ -131,8 +131,13 @@ export function OverviewTab() {
                     {project.tasks} tasks
                   </div>
                 </div>
-                <div className="space-y-1.5">
-                  <Progress value={project.progress} className="h-1 bg-zinc-800" />
+                <div className="space-y-1.5 pt-2">
+                  <div className="h-1.5 w-full bg-zinc-800/50 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-violet-500 transition-all duration-500" 
+                      style={{ width: `${project.progress}%` }} 
+                    />
+                  </div>
                   <p className="text-[10px] text-zinc-600 text-right font-mono">{project.progress}% completed</p>
                 </div>
               </div>

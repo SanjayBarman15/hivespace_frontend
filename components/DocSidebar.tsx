@@ -9,9 +9,20 @@ import {
   FileText, 
   MoreHorizontal, 
   GitFork, 
-  Trash2 
+  Trash2,
+  FolderOpen,
+  Check,
+  Folder
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
 interface PageNode {
@@ -57,8 +68,14 @@ const TEAM_PAGES: PageNode[] = [
   { id: "t5", title: "Interview Process", icon: "📋" },
 ];
 
+const PROJECTS = [
+  { id: "sprint3", name: "Sprint 3", workspace: "Engineering", color: "#7C5CFC", type: "project" },
+  { id: "frontend", name: "Frontend Redesign", workspace: "Engineering", color: "#3B82F6", type: "project" },
+  { id: "techdebt", name: "Tech Debt", workspace: "Engineering", color: "#10B981", type: "project" },
+];
+
 export function DocSidebar() {
-  const [scope, setScope] = useState<"sprint" | "team">("sprint");
+  const [activeProjectId, setActiveProjectId] = useState("sprint3");
   const [activePageId, setActivePageId] = useState("p2-1"); // Backend Design
   const [expandedIds, setExpandedIds] = useState<string[]>(["p2", "p4"]);
 
@@ -68,33 +85,66 @@ export function DocSidebar() {
     );
   };
 
-  const pages = scope === "sprint" ? SPRINT_PAGES : TEAM_PAGES;
+  const activeProject = PROJECTS.find(p => p.id === activeProjectId) || PROJECTS[0];
+  const pages = activeProjectId === "team" ? TEAM_PAGES : SPRINT_PAGES;
 
   return (
     <aside className="fixed top-0 left-[56px] z-40 flex h-full w-[260px] flex-col bg-[#1B1B1D]">
       
-      {/* SCOPE TOGGLE */}
+|      {/* SCOPE SWITCHER */}
       <div className="p-4 pt-4">
-        <div className="flex bg-zinc-800/80 p-0.5 rounded-md border border-zinc-700/50 shadow-inner shadow-black/20">
-          <button 
-            onClick={() => setScope("sprint")}
-            className={cn(
-              "flex-1 py-1.5 text-[11px] font-bold uppercase tracking-wider transition-all",
-              scope === "sprint" ? "bg-zinc-700 text-white rounded-sm shadow" : "text-zinc-500 hover:text-zinc-300"
-            )}
-          >
-            Sprint 3
-          </button>
-          <button 
-            onClick={() => setScope("team")}
-            className={cn(
-              "flex-1 py-1.5 text-[11px] font-bold uppercase tracking-wider transition-all",
-              scope === "team" ? "bg-zinc-700 text-white rounded-sm shadow" : "text-zinc-500 hover:text-zinc-300"
-            )}
-          >
-            Engineering
-          </button>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="flex w-full items-center gap-2 rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 transition-all hover:border-zinc-600 outline-none">
+              <FolderOpen className="h-[14px] w-[14px] text-zinc-400" />
+              <span className="text-sm font-medium text-[#E5E1E4]">{activeProject.name}</span>
+              <ChevronDown className="ml-auto h-3 w-3 text-zinc-500" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-[240px] bg-zinc-900 border-zinc-800 text-[#E5E1E4] p-1">
+            <DropdownMenuLabel className="px-2 py-1 text-[10px] font-bold tracking-wider text-zinc-500 uppercase">
+              Projects
+            </DropdownMenuLabel>
+            
+            {PROJECTS.map((project) => (
+              <DropdownMenuItem 
+                key={project.id}
+                onClick={() => setActiveProjectId(project.id)}
+                className="flex items-center gap-2 px-2 py-1.5 cursor-pointer hover:bg-zinc-800 focus:bg-zinc-800 rounded-sm"
+              >
+                <div className="w-4 flex items-center justify-center">
+                  {activeProjectId === project.id ? (
+                    <Check className="h-3 w-3 text-violet-500" />
+                  ) : <div className="w-3" />}
+                </div>
+                <div 
+                  className="h-1.5 w-1.5 rounded-full" 
+                  style={{ backgroundColor: project.color }} 
+                />
+                <span className="text-sm text-zinc-300">{project.name}</span>
+                <span className="ml-auto text-xs text-zinc-500">{project.workspace}</span>
+              </DropdownMenuItem>
+            ))}
+
+            <DropdownMenuSeparator className="bg-zinc-800 my-1" />
+            
+            <DropdownMenuLabel className="px-2 py-1 text-[10px] font-bold tracking-wider text-zinc-500 uppercase">
+              Workspace Shared
+            </DropdownMenuLabel>
+            <DropdownMenuItem 
+              onClick={() => setActiveProjectId("team")}
+              className="flex items-center gap-2 px-2 py-1.5 cursor-pointer hover:bg-zinc-800 focus:bg-zinc-800 rounded-sm"
+            >
+              <div className="w-4 flex items-center justify-center">
+                {activeProjectId === "team" ? (
+                  <Check className="h-3 w-3 text-violet-500" />
+                ) : <div className="w-3" />}
+              </div>
+              <Folder className="h-3.5 w-3.5 text-zinc-500" />
+              <span className="text-sm text-zinc-300">Engineering (shared docs)</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <div className="h-px bg-zinc-800/50 mx-4" />

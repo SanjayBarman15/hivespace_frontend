@@ -25,6 +25,7 @@ import {
   Trash2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -110,9 +111,96 @@ const INITIAL_EDGES: Edge[] = [
   { id: "e2-6", source: "n2", target: "n6", style: { stroke: "#3F3F46" } },
 ];
 
+// --- DOCS HOME VIEW ---
+
+function DocsHome({ onSelectProject }: { onSelectProject: (id: string) => void }) {
+  const projects = [
+    { 
+      id: "sprint3", 
+      name: "Sprint 3", 
+      workspace: "Engineering", 
+      color: "bg-violet-500", 
+      pages: 12,
+      recent: [
+        { title: "Backend Design", edited: "2h ago" },
+        { title: "Database Schema", edited: "5h ago" },
+        { title: "Apr 8 Standup", edited: "Yesterday" }
+      ]
+    },
+    { 
+      id: "frontend", 
+      name: "Frontend Redesign", 
+      workspace: "Engineering", 
+      color: "bg-blue-500", 
+      pages: 8,
+      recent: [
+        { title: "Style Guide", edited: "1d ago" },
+        { title: "Component Library", edited: "3d ago" }
+      ]
+    },
+    { 
+      id: "techdebt", 
+      name: "Tech Debt", 
+      workspace: "Engineering", 
+      color: "bg-emerald-500", 
+      pages: 4,
+      recent: [
+        { title: "Security Audit", edited: "1w ago" }
+      ]
+    }
+  ];
+
+  return (
+    <div className="flex-1 overflow-y-auto bg-[#201F21] p-10">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-xl font-semibold text-[#E5E1E4]">Docs</h1>
+        <p className="text-sm text-zinc-400 mt-1">Your knowledge bases across all projects</p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+          {projects.map((project) => (
+            <div 
+              key={project.id}
+              onClick={() => onSelectProject(project.id)}
+              className="bg-[#272629] border border-zinc-800/50 rounded-lg p-4 hover:border-zinc-700 transition-all cursor-pointer group"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <div className={cn("h-2 w-2 rounded-full", project.color)} />
+                  <span className="text-sm font-medium text-[#E5E1E4]">{project.name}</span>
+                </div>
+                <Badge className="bg-zinc-800 text-zinc-500 border-none font-normal text-[10px]">
+                  {project.workspace}
+                </Badge>
+              </div>
+
+              <div className="space-y-3 mb-6">
+                {project.recent.map((page, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <FileText className="h-3 w-3 text-zinc-500" />
+                    <span className="text-xs text-zinc-400 group-hover:text-zinc-300 transition-colors">{page.title}</span>
+                    <span className="text-[10px] text-zinc-600 ml-auto font-mono">{page.edited}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-center justify-between mt-auto pt-4 border-t border-zinc-800/50">
+                <span className="text-xs text-zinc-500">{project.pages} pages</span>
+                <span className="text-xs text-violet-400 font-medium group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
+                  Open docs <ChevronRight className="h-3 w-3" />
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // --- MAIN PAGE COMPONENT ---
 
 export default function KnowledgeBasePage() {
+  const [selectedProject, setSelectedProject] = useState<string | null>(null);
   const [view, setView] = useState<"editor" | "graph" | "history">("editor");
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [selectedVersionId, setSelectedVersionId] = useState<string | null>(null);
@@ -122,12 +210,32 @@ export default function KnowledgeBasePage() {
   const [nodes, , onNodesChange] = useNodesState(INITIAL_NODES);
   const [edges, , onEdgesChange] = useEdgesState(INITIAL_EDGES);
 
+  if (!selectedProject) {
+    return (
+      <div className="flex h-screen flex-col bg-[#0E0E10] text-[#E5E1E4] overflow-hidden">
+        <header className="flex h-[44px] items-center px-4 border-b border-zinc-800/50 bg-[#0E0E10]">
+          <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-widest">Knowledge Base Home</span>
+        </header>
+        <DocsHome onSelectProject={setSelectedProject} />
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen flex-col bg-[#0E0E10] text-[#E5E1E4] overflow-hidden">
       
       {/* --- TOP BAR --- */}
       <header className="sticky top-0 z-30 flex h-[44px] shrink-0 items-center justify-between bg-[#0E0E10]/80 backdrop-blur-md px-4 border-b border-zinc-800/50">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-0.5">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => setSelectedProject(null)}
+            className="h-7 text-xs text-zinc-500 hover:text-white px-2 mr-2"
+          >
+            Home
+          </Button>
+          <ChevronRight className="h-3 w-3 text-zinc-800 mr-2" />
           {MOCK_PAGE.breadcrumbs.map((crumb, i) => (
             <div key={i} className="flex items-center gap-2">
               <span className={cn(

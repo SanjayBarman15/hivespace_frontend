@@ -50,38 +50,39 @@ export default function BackendTeamPage() {
   const [activeTab, setActiveTab] = useState("overview");
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#201F21] text-[#E5E1E4]">
+    <div className="flex h-screen flex-col bg-[#201F21] text-[#E5E1E4] overflow-hidden">
       {/* TOP BREADCRUMB BAR */}
       <TeamBreadcrumbs />
 
-      {/* TEAM HEADER SECTION */}
-      <TeamHeader />
+      <div className="flex-1 flex flex-col overflow-y-auto">
+        {/* TEAM HEADER SECTION */}
+        <TeamHeader />
 
-      {/* TAB NAVIGATION */}
-      <Tabs defaultValue="overview" className="w-full" onValueChange={setActiveTab}>
-        <div className="border-b border-zinc-800/50 bg-[#201F21] px-6">
+        {/* TAB NAVIGATION */}
+        <Tabs defaultValue="overview" className="w-full" onValueChange={setActiveTab}>
+          <div className="sticky top-0 z-20 border-b border-zinc-800/50 bg-[#201F21] px-6">
           <TabsList className="h-12 w-full justify-start gap-8 bg-transparent p-0">
             <TabsTrigger 
               value="overview" 
-              className="relative h-12 rounded-none border-b-2 border-transparent bg-transparent px-0 pb-3 pt-4 text-sm font-medium text-zinc-500 data-[state=active]:border-violet-500 data-[state=active]:text-white data-[state=active]:shadow-none"
+              className="relative h-12 rounded-none border-b-2 border-transparent bg-transparent px-0 pb-3 pt-4 text-sm font-medium text-zinc-500 data-[state=active]:border-violet-500 data-[state=active]:text-white data-[state=active]:bg-transparent data-[state=active]:shadow-none shadow-none"
             >
               Overview
             </TabsTrigger>
             <TabsTrigger 
               value="members"
-              className="relative h-12 rounded-none border-b-2 border-transparent bg-transparent px-0 pb-3 pt-4 text-sm font-medium text-zinc-500 data-[state=active]:border-violet-500 data-[state=active]:text-white data-[state=active]:shadow-none"
+              className="relative h-12 rounded-none border-b-2 border-transparent bg-transparent px-0 pb-3 pt-4 text-sm font-medium text-zinc-500 data-[state=active]:border-violet-500 data-[state=active]:text-white data-[state=active]:bg-transparent data-[state=active]:shadow-none shadow-none"
             >
               Members
             </TabsTrigger>
             <TabsTrigger 
               value="tasks"
-              className="relative h-12 rounded-none border-b-2 border-transparent bg-transparent px-0 pb-3 pt-4 text-sm font-medium text-zinc-500 data-[state=active]:border-violet-500 data-[state=active]:text-white data-[state=active]:shadow-none"
+              className="relative h-12 rounded-none border-b-2 border-transparent bg-transparent px-0 pb-3 pt-4 text-sm font-medium text-zinc-500 data-[state=active]:border-violet-500 data-[state=active]:text-white data-[state=active]:bg-transparent data-[state=active]:shadow-none shadow-none"
             >
               Tasks
             </TabsTrigger>
             <TabsTrigger 
               value="channels"
-              className="relative h-12 rounded-none border-b-2 border-transparent bg-transparent px-0 pb-3 pt-4 text-sm font-medium text-zinc-500 data-[state=active]:border-violet-500 data-[state=active]:text-white data-[state=active]:shadow-none"
+              className="relative h-12 rounded-none border-b-2 border-transparent bg-transparent px-0 pb-3 pt-4 text-sm font-medium text-zinc-500 data-[state=active]:border-violet-500 data-[state=active]:text-white data-[state=active]:bg-transparent data-[state=active]:shadow-none shadow-none"
             >
               Channels
             </TabsTrigger>
@@ -102,7 +103,8 @@ export default function BackendTeamPage() {
             <ChannelsTab />
           </TabsContent>
         </div>
-      </Tabs>
+        </Tabs>
+      </div>
     </div>
   );
 }

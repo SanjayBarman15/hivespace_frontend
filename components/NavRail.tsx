@@ -40,7 +40,7 @@ export function NavRail() {
     { name: "Tasks", href: "/dashboard/tasks", icon: KanbanSquare },
     { name: "Chat", href: "/dashboard/chat/backend-ops", icon: MessageSquare },
     { name: "Docs", href: "/dashboard/docs", icon: BookOpen },
-    { name: "GitHub", href: "/github", icon: GitGraph },
+    { name: "GitHub", href: "/dashboard/github", icon: GitGraph },
     { name: "Mail", href: "/mail", icon: Mail, soon: true },
     { name: "AI Assistant", href: "/ai", icon: Sparkles },
   ]

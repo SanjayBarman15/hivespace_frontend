@@ -36,7 +36,7 @@ export function NavRail() {
 
   const navItems = [
     { name: "Home", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Inbox", href: "/inbox", icon: Inbox, badge: "4" },
+    { name: "Inbox", href: "/dashboard/inbox", icon: Inbox, badge: "4" },
     { name: "Tasks", href: "/dashboard/tasks", icon: KanbanSquare },
     { name: "Chat", href: "/dashboard/chat/backend-ops", icon: MessageSquare },
     { name: "Docs", href: "/dashboard/docs", icon: BookOpen },

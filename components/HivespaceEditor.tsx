@@ -190,7 +190,7 @@ export function HivespaceEditor({ initialContent, onUpdate }: HivespaceEditorPro
     <div className="relative w-full h-full">
       {/* SELECTION BUBBLE MENU */}
       {editor && (
-        <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
+        <BubbleMenu editor={editor}>
           <div className="bg-zinc-900 border border-zinc-700 rounded-md shadow-2xl px-1.5 py-1.5 flex gap-1 items-center animate-in fade-in zoom-in-95 duration-200">
             <MenuButton active={editor.isActive("bold")} onClick={() => editor.chain().focus().toggleBold().run()} icon={Bold} />
             <MenuButton active={editor.isActive("italic")} onClick={() => editor.chain().focus().toggleItalic().run()} icon={Italic} />

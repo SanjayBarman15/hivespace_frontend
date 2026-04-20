@@ -435,7 +435,6 @@ export default function KnowledgeBasePage() {
               onNodesChange={onNodesChange}
               onEdgesChange={onEdgesChange}
               fitView
-              colorMode="dark"
             >
               <Background color="#18181B" gap={20} />
               <Controls className="border-zinc-700 bg-zinc-800 fill-zinc-400" />

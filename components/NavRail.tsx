@@ -42,7 +42,7 @@ export function NavRail() {
     { name: "Docs", href: "/dashboard/docs", icon: BookOpen },
     { name: "GitHub", href: "/dashboard/github", icon: GitGraph },
     { name: "Mail", href: "/mail", icon: Mail, soon: true },
-    { name: "AI Assistant", href: "/ai", icon: Sparkles },
+    { name: "AI Assistant", href: "/dashboard/ai", icon: Sparkles },
   ]
 
   return (

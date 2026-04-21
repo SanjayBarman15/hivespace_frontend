@@ -171,19 +171,27 @@ export function NavRail() {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="outline-none h-9 w-9 flex items-center justify-center rounded-md hover:bg-zinc-800 transition-colors">
+              <Link
+                href="/account"
+                className="outline-none h-9 w-9 flex items-center justify-center rounded-md hover:bg-zinc-800 transition-colors"
+              >
                 <Avatar className="h-[26px] w-[26px] cursor-pointer rounded-md">
                   <AvatarFallback className="bg-zinc-900 text-xs text-zinc-400 rounded-md">
                     JD
                   </AvatarFallback>
                 </Avatar>
-              </button>
+              </Link>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" side="right" className="ml-2 bg-zinc-900/95 backdrop-blur-xl border border-zinc-800 text-[#E5E1E4] rounded-md">
               <DropdownMenuLabel className="text-zinc-400">My Account</DropdownMenuLabel>
-              <DropdownMenuItem className="hover:bg-zinc-800 cursor-pointer">Profile</DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-zinc-800 cursor-pointer">Preferences</DropdownMenuItem>
+              <DropdownMenuItem className="hover:bg-zinc-800 cursor-pointer" asChild>
+                <Link href="/account/profile">Profile</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="hover:bg-zinc-800 cursor-pointer" asChild>
+                <Link href="/account/security">Security</Link>
+              </DropdownMenuItem>
               <DropdownMenuItem className="hover:bg-zinc-800 cursor-pointer">Switch Org</DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-zinc-800/50 my-1" />
               <DropdownMenuItem className="text-[#f95b4e] hover:bg-zinc-800 hover:text-[#f95b4e] cursor-pointer">
                 Log out
               </DropdownMenuItem>

@@ -105,8 +105,12 @@ export function WorkspaceSidebar() {
               return (
                 <div key={project.id} className="flex flex-col">
                   {/* Project Row */}
-                  <div 
-                    onClick={() => toggleExpand(project.id)}
+                  <Link 
+                    href={project.path}
+                    onClick={(e) => {
+                      // We toggle expansion but still allow the Link to navigate
+                      toggleExpand(project.id);
+                    }}
                     className={`group flex h-8 items-center justify-between cursor-pointer rounded-r-md px-2 border-l-2 transition-colors ${
                       isActive 
                         ? "border-violet-500 bg-zinc-800/50 text-white" 
@@ -127,7 +131,7 @@ export function WorkspaceSidebar() {
                     {project.unread && !isExpanded && (
                       <div className="h-1.5 w-1.5 rounded-full bg-[#f95b4e]" />
                     )}
-                  </div>
+                  </Link>
 
                   {/* Sub-items */}
                   {isExpanded && (
@@ -135,8 +139,8 @@ export function WorkspaceSidebar() {
                       <SubItem 
                         icon={KanbanSquare} 
                         label="Board" 
-                        href={`${project.path}`} 
-                        isActive={pathname === project.path} 
+                        href={`${project.path}/board`} 
+                        isActive={pathname === `${project.path}/board`} 
                       />
                       <SubItem 
                         icon={FileText} 

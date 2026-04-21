@@ -1,143 +1,83 @@
 "use client";
 
-import { useState } from "react";
 import { 
+  Zap, 
+  Calendar, 
+  UserPlus, 
+  Share2, 
+  Settings, 
+  PlusCircle, 
   ChevronRight, 
-  SlidersHorizontal, 
-  LayoutList, 
-  PlusCircle,
+  Search,
   MoreHorizontal,
-  Calendar,
+  FileText,
+  MessageSquare,
+  Clock,
+  GitBranch,
+  ExternalLink,
+  CheckCircle2,
   GitPullRequest,
-  Plus,
-  GitCommit,
-  ArrowRight
+  CheckSquare,
+  Link2,
+  Trash2,
+  GitGraph as Github
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
-import {
-  Sheet,
-  SheetContent,
-} from "@/components/ui/sheet";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { 
-  DropdownMenu, 
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem
-} from "@/components/ui/dropdown-menu";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
 
-// --- TYPES & CONSTANTS ---
+// --- MOCK DATA ---
 
-const PRIORITIES = {
-  urgent: "#E24B4A",
-  high: "#EF9F27",
-  normal: "#71717A", // zinc-500
-};
-
-const ASSIGNEE_COLORS: Record<string, string> = {
-  "MV": "bg-amber-600",
-  "RK": "bg-blue-600",
-  "DK": "bg-green-600",
-  "SA": "bg-red-600",
-  "PL": "bg-purple-600",
-  "RS": "bg-indigo-600",
-};
-
-type Priority = keyof typeof PRIORITIES;
-
-interface Task {
-  id: string;
-  title: string;
-  priority: Priority;
-  assignee: { name: string; initials: string };
-  labels?: string[];
-  dueDate?: string;
-  dueToday?: boolean;
-  overdue?: boolean;
-  pr?: string;
-  reviewers?: { name: string; initials: string }[];
-  inProgress?: boolean;
-  points?: number;
-}
-
-const SAMPLE_TASKS: Record<string, Task[]> = {
-  "Backlog": [
-    { id: "HS-038", title: "Kanban column CRUD endpoints", priority: "normal", assignee: { name: "Robert S.", initials: "RS" } },
-    { id: "HS-035", title: "Supabase RLS policies for memberships", priority: "high", assignee: { name: "Meera V.", initials: "MV" } },
-    { id: "HS-033", title: "Rate limiting on API gateway", priority: "normal", assignee: { name: "David K.", initials: "DK" } },
-  ],
-  "Todo": [
-    { id: "HS-041", title: "Invite token expiry edge cases", priority: "high", assignee: { name: "Ryan K.", initials: "RK" }, labels: ["Bug"], dueDate: "Apr 12" },
-    { id: "HS-040", title: "Email notification templates", priority: "normal", assignee: { name: "Peter L.", initials: "PL" }, labels: ["Backend"] },
-  ],
-  "In Progress": [
-    { id: "HS-044", title: "STOMP WebSocket chat broadcast", priority: "urgent", assignee: { name: "Meera V.", initials: "MV" }, labels: ["Backend", "Chat"], pr: "PR #82", dueDate: "Apr 15", inProgress: true, points: 5 },
-    { id: "HS-042", title: "Tiptap editor setup + auto-save", priority: "high", assignee: { name: "Robert S.", initials: "RS" }, labels: ["Docs"], dueDate: "Apr 14" },
-  ],
-  "Review": [
-    { id: "HS-039", title: "GitHub webhook HMAC validation", priority: "normal", assignee: { name: "Sarah A.", initials: "SA" }, labels: ["GitHub"], reviewers: [{ name: "Meera V.", initials: "MV" }, { name: "David K.", initials: "DK" }] },
-    { id: "HS-037", title: "Org invite flow end-to-end", priority: "high", assignee: { name: "Ryan K.", initials: "RK" }, labels: ["Auth"] },
-  ],
-  "Done": [
-    { id: "HS-033", title: "Supabase Auth setup + JWT middleware", priority: "normal", assignee: { name: "Meera V.", initials: "MV" } },
-    { id: "HS-031", title: "Org + workspace CRUD REST APIs", priority: "normal", assignee: { name: "David K.", initials: "DK" } },
-    { id: "HS-029", title: "Spring Boot project scaffold", priority: "normal", assignee: { name: "Robert S.", initials: "RS" } },
-  ]
-};
-
-const COLUMNS = [
-  { name: "Backlog", tasks: SAMPLE_TASKS["Backlog"], count: 6 },
-  { name: "Todo", tasks: SAMPLE_TASKS["Todo"], count: 4 },
-  { name: "In Progress", tasks: SAMPLE_TASKS["In Progress"], count: 3, accent: true },
-  { name: "Review", tasks: SAMPLE_TASKS["Review"], count: 2 },
-  { name: "Done", tasks: SAMPLE_TASKS["Done"], count: 8, muted: true },
+const RECENT_TASKS = [
+  { id: "HS-044", title: "STOMP WebSocket chat broadcast", status: "In Progress", statusColor: "text-violet-400 bg-violet-400/10", priority: "bg-red-500", assignee: "MV" },
+  { id: "HS-042", title: "Tiptap editor setup + auto-save", status: "In Progress", statusColor: "text-violet-400 bg-violet-400/10", priority: "bg-amber-500", assignee: "RS" },
+  { id: "HS-041", title: "Invite token expiry edge cases", status: "Todo", statusColor: "text-zinc-400 bg-zinc-400/10", priority: "bg-amber-500", assignee: "RK" },
+  { id: "HS-039", title: "GitHub webhook HMAC validation", status: "Review", statusColor: "text-blue-400 bg-blue-400/10", priority: "bg-zinc-500", assignee: "SA" },
+  { id: "HS-038", title: "Kanban column CRUD endpoints", status: "Backlog", statusColor: "text-zinc-600 bg-zinc-600/10", priority: "bg-zinc-500", assignee: "RS" },
 ];
 
-export default function SprintThreePage() {
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const [editedTitle, setEditedTitle] = useState("");
+const RECENT_DOCS = [
+  { title: "Backend Design", edited: "2h ago", author: "RS" },
+  { title: "Database Schema", edited: "5h ago", author: "MV" },
+  { title: "Apr 8 Standup", edited: "Yesterday", author: "DK" },
+];
 
-  const handleTaskClick = (task: Task) => {
-    setSelectedTask(task);
-    setEditedTitle(task.title);
-  };
+const RECENT_PRs = [
+  { id: "#82", title: "STOMP WebSocket broadcast", author: "MV", time: "2h" },
+  { id: "#79", title: "Tiptap editor", author: "RS", time: "5h" },
+  { id: "#74", title: "HMAC validation", author: "SA", time: "2d" },
+];
 
+const TEAMS = [
+  { name: "Backend Team", members: 6, initials: ["MV", "DK", "RK"] },
+  { name: "Frontend Team", members: 4, initials: ["RS", "PL"] },
+];
+
+export default function ProjectOverviewPage() {
   return (
-    <div className="flex h-screen flex-col bg-[#0E0E10] text-[#E5E1E4] overflow-hidden font-sans">
-      
-      {/* --- TOP BREADCRUMB BAR --- */}
-      <header className="sticky top-0 z-30 flex h-[44px] shrink-0 items-center justify-between border-b border-zinc-800/50 bg-[#0E0E10]/80 px-6 backdrop-blur-sm">
-        
-        {/* Left: Breadcrumbs */}
+    <ScrollArea className="h-screen w-full bg-[#0E0E10] text-[#E5E1E4]">
+      {/* ─── TOP BAR ─── */}
+      <header className="sticky top-0 z-30 flex h-[44px] shrink-0 items-center justify-between border-b border-zinc-800/50 bg-[#0E0E10]/80 px-6 backdrop-blur-md">
         <div className="flex items-center gap-2 flex-1">
-          <span className="text-xs text-zinc-400">Hivespace</span>
-          <span className="text-zinc-600">/</span>
-          <span className="text-xs text-zinc-400">Engineering</span>
-          <span className="text-zinc-600">/</span>
+          <span className="text-xs text-zinc-500">Hivespace</span>
+          <span className="text-zinc-800 text-[10px]">/</span>
+          <span className="text-xs text-zinc-500">Engineering</span>
+          <span className="text-zinc-800 text-[10px]">/</span>
           <span className="text-xs font-medium text-white">Sprint 3</span>
-          
-          <div className="ml-3 flex items-center rounded-md bg-zinc-800 px-2 py-0.5 text-[10px] text-zinc-400 font-medium">
-            Sprint 3 · Apr 1–15
-          </div>
         </div>
 
-        {/* Center: Tabs */}
         <nav className="flex h-full items-center gap-6">
-          <button className="relative flex h-full items-center px-1 text-sm font-medium text-white">
-            Board
+          <Link href="/dashboard/projects/sprint-3" className="relative flex h-full items-center px-1 text-sm font-medium text-white">
+            Overview
             <div className="absolute bottom-0 left-0 h-[2px] w-full bg-[#7C5CFC]" />
-          </button>
+          </Link>
+          <Link href="/dashboard/projects/sprint-3/board" className="flex h-full items-center px-1 text-sm font-medium text-zinc-500 hover:text-zinc-300 transition-colors">
+            Board
+          </Link>
           <button className="flex h-full items-center px-1 text-sm font-medium text-zinc-500 hover:text-zinc-300 transition-colors">
             List
           </button>
@@ -147,354 +87,381 @@ export default function SprintThreePage() {
           <button className="flex h-full items-center px-1 text-sm font-medium text-zinc-500 hover:text-zinc-300 transition-colors">
             Backlog
           </button>
+          <Link href="/dashboard/docs" className="flex h-full items-center px-1 text-sm font-medium text-zinc-500 hover:text-zinc-300 transition-colors">
+            Docs
+          </Link>
+          <button className="flex h-full items-center px-1 text-sm font-medium text-zinc-500 hover:text-zinc-300 transition-colors">
+            Settings
+          </button>
         </nav>
 
-        {/* Right: Actions */}
         <div className="flex items-center justify-end gap-2 flex-1">
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-[#E5E1E4] hover:bg-zinc-800 rounded-md">
-            <SlidersHorizontal strokeWidth={1.5} className="h-3.5 w-3.5" />
-          </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-[#E5E1E4] hover:bg-zinc-800 rounded-md">
-            <LayoutList strokeWidth={1.5} className="h-3.5 w-3.5" />
-          </Button>
-          
-          <div className="flex items-center ml-2 mr-2">
-            {["MV", "RK", "PL", "RS"].map((initials, i) => (
-              <Avatar key={initials} className={`h-6 w-6 ring-2 ring-[#0E0E10] -ml-1.5 first:ml-0 bg-zinc-800 border border-zinc-700/50`}>
-                <AvatarFallback className="bg-zinc-800 text-[9px] text-zinc-300 font-medium">{initials}</AvatarFallback>
-              </Avatar>
-            ))}
-          </div>
-
-          <Button className="h-7 bg-[linear-gradient(145deg,#CABEFF,#947DFF)] text-zinc-950 font-bold border-none hover:opacity-90 transition-opacity text-[10px] uppercase tracking-wider rounded-md px-3">
+           <Button className="h-7 bg-[linear-gradient(145deg,#CABEFF,#947DFF)] text-zinc-950 font-bold border-none hover:opacity-90 transition-opacity text-[10px] uppercase tracking-wider rounded-md px-3">
             <PlusCircle strokeWidth={1.5} className="mr-1.5 h-3.5 w-3.5" />
             New Task
           </Button>
         </div>
       </header>
 
-      {/* --- CONTENT AREA --- */}
-      <div className="flex-1 flex flex-col min-h-0 bg-[#201F21]">
-        
-        {/* Sprint Progress Bar */}
-        <div className="flex flex-col px-8 py-5 shrink-0 gap-2.5">
-          <div className="flex items-baseline gap-3">
-            <h1 className="text-sm font-medium text-[#E5E1E4]">Sprint 3</h1>
-            <span className="text-xs text-zinc-400">Apr 1 – Apr 15, 2026</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="relative h-1.5 flex-1 max-w-[400px] bg-zinc-700 rounded-full overflow-hidden">
-              <div className="absolute top-0 left-0 h-full bg-[#7C5CFC] rounded-full transition-all" style={{ width: '68%' }} />
+      {/* ─── PROJECT HEADER ─── */}
+      <div className="flex flex-col p-8 pb-4">
+        <div className="flex items-start justify-between">
+          <div className="flex gap-6">
+            <div className="h-16 w-16 rounded-xl bg-violet-500/20 border border-violet-500/30 flex items-center justify-center text-3xl">
+              ⚡
             </div>
-            <span className="text-[10px] font-medium text-zinc-400">17/25 tasks complete</span>
+            <div className="flex flex-col gap-1">
+              <h1 className="text-3xl font-bold tracking-tight text-[#E5E1E4]">Sprint 3</h1>
+              <p className="text-xs font-medium text-zinc-500">Engineering workspace</p>
+              <p className="text-sm text-zinc-400 mt-2 max-w-2xl leading-relaxed">
+                Core backend infrastructure sprint — WebSocket, Auth, GitHub integration, and Docs editor. 
+                Focused on stabilizing real-time communication and document synchronization.
+              </p>
+              <div className="flex items-center gap-2 mt-3 text-zinc-500">
+                <Calendar className="h-3.5 w-3.5" strokeWidth={1.5} />
+                <span className="text-xs">Apr 1 – Apr 15, 2026</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col items-end gap-4">
+            <div className="flex items-center">
+              {["MV", "RK", "DK", "SA", "PL", "RS"].map((initials, i) => (
+                <Avatar key={initials} className={cn(
+                  "h-8 w-8 ring-4 ring-[#0E0E10] -ml-2.5 first:ml-0 bg-zinc-800 border border-zinc-700/50",
+                  i === 0 && "z-10",
+                  i === 1 && "z-20",
+                  i === 2 && "z-30",
+                  i === 3 && "z-40",
+                  i === 4 && "z-50",
+                )}>
+                  <AvatarFallback className="bg-zinc-800 text-[10px] text-zinc-300 font-bold">{initials}</AvatarFallback>
+                </Avatar>
+              ))}
+              <div className="h-8 w-8 rounded-full ring-4 ring-[#0E0E10] -ml-2.5 bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[10px] text-zinc-500 font-medium">
+                +2
+              </div>
+            </div>
+            <div className="flex items-center gap-1">
+              <Button variant="ghost" size="sm" className="h-8 px-2 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-md">
+                <UserPlus className="h-3.5 w-3.5 mr-2" strokeWidth={1.5} />
+                Invite
+              </Button>
+              <Button variant="ghost" size="sm" className="h-8 px-2 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-md">
+                <Share2 className="h-3.5 w-3.5 mr-2" strokeWidth={1.5} />
+                Share
+              </Button>
+              <Button variant="ghost" size="sm" className="h-8 px-2 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-md">
+                <Settings className="h-3.5 w-3.5 mr-2" strokeWidth={1.5} />
+                Edit Project
+              </Button>
+            </div>
           </div>
         </div>
-
-        {/* --- KANBAN BOARD --- */}
-        <ScrollArea className="flex-1 w-full whitespace-nowrap px-8 pb-8">
-          <div className="flex gap-4 h-full min-h-[calc(100vh-160px)]" style={{ width: 'max-content' }}>
-            {COLUMNS.map((col) => (
-              <div key={col.name} className="flex flex-col w-[280px] shrink-0 bg-[#1B1B1D] rounded-lg h-full overflow-hidden">
-                
-                {/* Column Header */}
-                <div className="flex items-center justify-between p-3 shrink-0">
-                  <div className="flex items-center">
-                    <span className={`text-sm font-medium ${col.name === 'In Progress' ? 'text-violet-400' : col.accent ? 'text-[#7C5CFC]' : 'text-[#E5E1E4]'}`}>
-                      {col.name}
-                    </span>
-                    <span className="text-xs text-zinc-500 ml-2">{col.count}</span>
-                  </div>
-                  <div className="flex items-center gap-0.5">
-                    <Button variant="ghost" size="icon" className="h-6 w-6 text-zinc-500 hover:text-white hover:bg-zinc-800 rounded-md">
-                      <Plus strokeWidth={1.5} className="h-3.5 w-3.5" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="h-6 w-6 text-zinc-500 hover:text-white hover:bg-zinc-800 rounded-md">
-                      <MoreHorizontal strokeWidth={1.5} className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Task List */}
-                <div className="flex flex-col gap-2 p-2 pt-0 min-h-0 overflow-y-auto">
-                  {col.tasks.map((task) => (
-                    <TaskCard 
-                      key={task.id} 
-                      task={task} 
-                      isMuted={col.muted} 
-                      onClick={() => handleTaskClick(task)} 
-                    />
-                  ))}
-                </div>
-              </div>
-            ))}
-
-            {/* Add Column Button */}
-            <button className="flex h-10 w-48 shrink-0 items-center justify-center gap-2 rounded-lg border border-dashed border-zinc-700 text-xs text-zinc-500 hover:border-zinc-600 hover:text-zinc-400 transition-all mt-2.5">
-              <Plus className="h-3.5 w-3.5" />
-              <span>Add column</span>
-            </button>
-          </div>
-          <ScrollBar orientation="horizontal" className="bg-zinc-900/50" />
-        </ScrollArea>
       </div>
 
-      {/* --- TASK DETAIL SHEET --- */}
-      <Sheet open={!!selectedTask} onOpenChange={(open) => !open && setSelectedTask(null)}>
-        <SheetContent side="right" className="w-[380px] p-0 bg-[#1B1B1D] border-l border-zinc-800/50 shadow-2xl flex flex-col gap-0 outline-none">
-          <ScrollArea className="flex-1">
-            <div className="p-6 flex flex-col gap-6">
-              
-              {/* Header Info */}
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-xs text-zinc-500 tracking-tight">{selectedTask?.id}</span>
-                <Select defaultValue="in-progress">
-                  <SelectTrigger className="w-auto h-7 text-xs bg-zinc-800/50 border-none text-[#E5E1E4] focus:ring-0 shadow-none px-2 rounded-md hover:bg-zinc-800 transition-colors">
-                    <div className="flex items-center gap-2">
-                      <div className="h-1.5 w-1.5 rounded-full bg-[#7C5CFC]" />
-                      <SelectValue placeholder="Status" />
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent className="bg-[#201F21] border-zinc-800 text-[#E5E1E4] rounded-md">
-                    <SelectItem value="todo">Todo</SelectItem>
-                    <SelectItem value="in-progress">In Progress</SelectItem>
-                    <SelectItem value="review">Review</SelectItem>
-                    <SelectItem value="done">Done</SelectItem>
-                  </SelectContent>
-                </Select>
+      {/* ─── SPRINT PROGRESS ─── */}
+      <div className="px-8 mb-8 mt-2">
+        <div className="bg-[#1B1B1D] border border-zinc-800/10 rounded-lg p-5">
+           <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center">
+                <span className="text-sm font-semibold text-[#E5E1E4]">Sprint Progress</span>
+                <span className="text-[10px] text-zinc-500 font-mono ml-3 uppercase tracking-wider">Apr 1–15, 2026</span>
+                <span className="text-[10px] font-bold text-amber-500 ml-4 bg-amber-500/10 px-2 py-0.5 rounded-full ring-1 ring-amber-500/20">8 DAYS REMAINING</span>
               </div>
+              <span className="text-xs font-mono text-zinc-400">17/25 tasks complete · 68%</span>
+           </div>
+           <Progress value={68} className="h-2 bg-zinc-800/50" indicatorClassName="bg-[#7C5CFC]" />
+           
+           <div className="flex gap-2.5 mt-5">
+              <div className="flex items-center gap-2 bg-[#201F21] px-3 py-1.5 rounded-full border border-zinc-800/50">
+                <div className="h-1.5 w-1.5 rounded-full bg-zinc-600" />
+                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Backlog</span>
+                <span className="text-xs font-mono text-zinc-500 ml-1">3</span>
+              </div>
+              <div className="flex items-center gap-2 bg-[#201F21] px-3 py-1.5 rounded-full border border-zinc-800/50">
+                <div className="h-1.5 w-1.5 rounded-full bg-zinc-500" />
+                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Todo</span>
+                <span className="text-xs font-mono text-zinc-500 ml-1">4</span>
+              </div>
+              <div className="flex items-center gap-2 bg-[#201F21] px-3 py-1.5 rounded-full border border-zinc-800/50">
+                <div className="h-1.5 w-1.5 rounded-full bg-violet-400" />
+                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">In Progress</span>
+                <span className="text-xs font-mono text-zinc-500 ml-1">3</span>
+              </div>
+              <div className="flex items-center gap-2 bg-[#201F21] px-3 py-1.5 rounded-full border border-zinc-800/50">
+                <div className="h-1.5 w-1.5 rounded-full bg-blue-400" />
+                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Review</span>
+                <span className="text-xs font-mono text-zinc-500 ml-1">2</span>
+              </div>
+              <div className="flex items-center gap-2 bg-[#201F21] px-3 py-1.5 rounded-full border border-zinc-800/50">
+                <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Done</span>
+                <span className="text-xs font-mono text-zinc-500 ml-1">8</span>
+              </div>
+           </div>
+        </div>
+      </div>
 
-              {/* Editable Title */}
-              <input 
-                type="text"
-                value={editedTitle}
-                onChange={(e) => setEditedTitle(e.target.value)}
-                className="text-lg font-medium bg-transparent border-none text-[#E5E1E4] focus:outline-none focus:ring-1 focus:ring-zinc-800 rounded px-1 -ml-1 hover:bg-zinc-800/20 transition-colors w-full cursor-text"
-              />
-
-              {/* Metadata Table */}
-              <div className="flex flex-col text-[13px]">
-                <MetadataRow label="Owner">
-                  <div className="flex items-center gap-2">
-                    <Avatar className="h-5 w-5 bg-zinc-800 border border-zinc-700/50">
-                      <AvatarFallback className="text-[9px] uppercase">{selectedTask?.assignee.initials}</AvatarFallback>
+      {/* ─── MAIN GRID ─── */}
+      <div className="grid grid-cols-10 gap-8 px-8 pb-16">
+        
+        {/* LEFT COLUMN (60%) */}
+        <div className="col-span-6 flex flex-col gap-10">
+          
+          {/* Recent Tasks */}
+          <section className="flex flex-col">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xs font-bold tracking-widest text-zinc-600 uppercase">Recent Tasks</h3>
+              <Link href="/dashboard/projects/sprint-3/board" className="text-[11px] font-semibold text-violet-400 hover:text-violet-300 transition-colors flex items-center gap-1 group">
+                View board <ChevronRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            </div>
+            <div className="flex flex-col bg-[#1B1B1D] rounded-lg overflow-hidden border border-zinc-800/10 shadow-xl shadow-black/20">
+              {RECENT_TASKS.map((task, i) => (
+                <div key={task.id} className={cn(
+                  "flex items-center justify-between px-5 py-3 hover:bg-white/5 transition-colors group cursor-pointer",
+                  i !== RECENT_TASKS.length - 1 && "border-b border-zinc-800/30"
+                )}>
+                  <div className="flex items-center gap-4">
+                    <div className="h-4 w-4 border border-zinc-700 rounded-sm flex items-center justify-center bg-zinc-950 group-hover:border-zinc-500 transition-colors" />
+                    <div className={cn("h-1.5 w-1.5 rounded-full", task.priority)} />
+                    <span className="font-mono text-xs text-zinc-500 group-hover:text-zinc-400">{task.id}</span>
+                    <span className="text-sm font-medium text-[#E5E1E4] truncate max-w-[280px]">{task.title}</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <Badge className={cn("border-none text-[10px] font-bold h-5 uppercase tracking-wide", task.statusColor)}>
+                      {task.status}
+                    </Badge>
+                    <Avatar className="h-6 w-6">
+                      <AvatarFallback className="bg-zinc-800 text-[9px] text-zinc-400 font-bold">{task.assignee}</AvatarFallback>
                     </Avatar>
-                    <span className="text-[#E5E1E4]">{selectedTask?.assignee.name}</span>
                   </div>
-                </MetadataRow>
-                
-                <MetadataRow label="Collaborators">
-                  <div className="flex items-center">
-                    {["RK", "PL"].map((initials, i) => (
-                      <Avatar key={initials} className="h-5 w-5 ring-2 ring-[#1B1B1D] -ml-1.5 first:ml-0 bg-zinc-800 border border-zinc-700/50">
-                        <AvatarFallback className="text-[8px] font-medium">{initials}</AvatarFallback>
-                      </Avatar>
-                    ))}
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Recent Docs */}
+          <section className="flex flex-col">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xs font-bold tracking-widest text-zinc-600 uppercase">Recent Docs</h3>
+               <Link href="/dashboard/docs" className="text-[11px] font-semibold text-violet-400 hover:text-violet-300 transition-colors flex items-center gap-1 group">
+                Open docs <ChevronRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            </div>
+            <div className="flex flex-col bg-[#1B1B1D] rounded-lg overflow-hidden border border-zinc-800/10 shadow-xl shadow-black/20">
+              {RECENT_DOCS.map((doc, i) => (
+                <div key={doc.title} className={cn(
+                  "flex items-center justify-between px-5 py-4 hover:bg-white/5 transition-colors group cursor-pointer",
+                  i !== RECENT_DOCS.length - 1 && "border-b border-zinc-800/30"
+                )}>
+                  <div className="flex items-center gap-3">
+                    <div className="h-8 w-8 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-500 group-hover:text-violet-400 transition-colors">
+                      <FileText className="h-4 w-4" strokeWidth={1.5} />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-zinc-300 group-hover:text-white transition-colors">{doc.title}</span>
+                      <span className="text-[10px] text-zinc-600 font-mono uppercase tracking-tighter">Architecture · Sprint 3</span>
+                    </div>
                   </div>
-                </MetadataRow>
-
-                <MetadataRow label="Priority">
-                  <div className="flex items-center gap-2">
-                    <div className={`h-1.5 w-1.5 rounded-full ${selectedTask?.priority === 'urgent' ? 'bg-[#E24B4A]' : 'bg-zinc-500'}`} />
-                    <span className="text-[#E5E1E4] capitalize">{selectedTask?.priority}</span>
+                  <div className="flex items-center gap-4">
+                    <span className="text-xs text-zinc-500 font-mono italic">edited {doc.edited}</span>
+                    <Avatar className="h-6 w-6">
+                      <AvatarFallback className="bg-zinc-800 text-[9px] text-zinc-400 font-bold">{doc.author}</AvatarFallback>
+                    </Avatar>
                   </div>
-                </MetadataRow>
+                </div>
+              ))}
+            </div>
+          </section>
 
-                <MetadataRow label="Due date">
-                  <div className="flex items-center gap-2 text-zinc-300">
-                    <Calendar className="h-3.5 w-3.5 text-zinc-500" strokeWidth={1.5} />
-                    <span>{selectedTask?.dueDate || "None"}</span>
-                  </div>
-                </MetadataRow>
-
-                <MetadataRow label="Sprint">
-                  <span className="text-[#7C5CFC] font-medium cursor-pointer hover:underline underline-offset-2 transition-all">Sprint 3</span>
-                </MetadataRow>
-
-                <MetadataRow label="Labels">
-                  <div className="flex flex-wrap gap-1.5">
-                    {selectedTask?.labels?.map(label => (
-                      <Badge key={label} className="bg-zinc-800 text-zinc-400 border-zinc-700/50 h-5 px-1.5 font-normal text-[10px] rounded-sm hover:bg-zinc-800">
-                        {label}
-                      </Badge>
-                    ))}
-                  </div>
-                </MetadataRow>
-
-                <MetadataRow label="Estimate">
-                  <span className="text-[#E5E1E4]">{selectedTask?.points ? `${selectedTask.points} points` : "Unestimated"}</span>
-                </MetadataRow>
+          {/* Recent Activity */}
+          <section className="flex flex-col">
+            <h3 className="text-xs font-bold tracking-widest text-zinc-600 uppercase mb-6">Recent Activity</h3>
+            <div className="relative flex flex-col gap-8 pl-8">
+              <div className="absolute left-3.5 top-2 bottom-4 w-px bg-zinc-800" />
+              
+              <div className="relative flex gap-4">
+                <Avatar className="h-7 w-7 ring-4 ring-[#0E0E10] absolute -left-10 z-10">
+                  <AvatarFallback className="bg-zinc-800 text-[10px] text-zinc-400">MV</AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col gap-1">
+                  <p className="text-sm text-zinc-400 leading-relaxed">
+                    <span className="text-white font-semibold">Meera V.</span> merged PR <span className="font-mono text-emerald-400">#82</span> · <span className="italic text-zinc-500">STOMP WebSocket broadcast</span>
+                  </p>
+                  <span className="text-[10px] text-zinc-600 font-mono">10:42 AM Today</span>
+                </div>
               </div>
 
-              {/* GitHub Section */}
-              <div className="mt-2 flex flex-col gap-3">
-                <span className="text-[10px] font-bold text-zinc-500 tracking-widest uppercase">Development</span>
-                <div className="flex flex-col bg-[#272629]/50 rounded-md border border-zinc-800/50 p-3 gap-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2.5">
-                      <GitPullRequest className="h-4 w-4 text-emerald-500" strokeWidth={1.5} />
-                      <div className="flex flex-col">
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono text-xs text-[#E5E1E4]">PR #82</span>
-                          <span className="bg-emerald-500/10 text-emerald-500 text-[10px] px-1 rounded-sm border-none font-medium h-4 flex items-center">OPEN</span>
+              <div className="relative flex gap-4">
+                 <div className="h-7 w-7 rounded-full bg-violet-500/10 border border-violet-500/20 absolute -left-10 z-10 flex items-center justify-center">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-violet-500" />
+                 </div>
+                <div className="flex flex-col gap-1">
+                  <p className="text-sm text-zinc-400 leading-relaxed">
+                    Task <span className="text-violet-400 font-medium">HS-044</span> moved to <Badge className="bg-emerald-500/10 text-emerald-500 border-none text-[10px] h-4 px-1 rounded-sm">DONE</Badge>
+                  </p>
+                  <span className="text-[10px] text-zinc-600 font-mono">Yesterday</span>
+                </div>
+              </div>
+
+              <div className="relative flex gap-4">
+                 <Avatar className="h-7 w-7 ring-4 ring-[#0E0E10] absolute -left-10 z-10">
+                  <AvatarFallback className="bg-zinc-800 text-[10px] text-zinc-400">DK</AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col gap-1">
+                  <p className="text-sm text-zinc-400 leading-relaxed">
+                    <span className="text-white font-semibold">David K.</span> commented on <span className="text-zinc-200">Database Schema</span>
+                  </p>
+                  <div className="bg-[#1B1B1D] border-l-2 border-zinc-700 p-2 mt-1 rounded-r-md">
+                    <p className="text-xs text-zinc-500 italic">"Looks good, but we should index the channel_id column..."</p>
+                  </div>
+                  <span className="text-[10px] text-zinc-600 font-mono">Yesterday</span>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        {/* RIGHT COLUMN (40%) */}
+        <div className="col-span-4 flex flex-col gap-8">
+          
+          {/* GitHub Status */}
+          <section className="flex flex-col">
+            <h3 className="text-xs font-bold tracking-widest text-zinc-600 uppercase mb-3">Github</h3>
+            <div className="bg-[#272629] rounded-lg p-5 border border-zinc-800/10 shadow-xl shadow-black/20">
+               <div className="flex items-start justify-between mb-4">
+                  <div className="flex flex-col gap-0.5">
+                    <div className="flex items-center gap-2">
+                       <Github className="h-4 w-4 text-zinc-500" />
+                       <span className="font-mono text-sm text-[#E5E1E4]">acme-corp/backend</span>
+                    </div>
+                    <div className="flex items-center gap-2 mt-1">
+                       <Badge className="bg-zinc-800 text-zinc-500 border-zinc-700 font-mono text-[10px] h-5 rounded-md flex items-center gap-1.5 px-2">
+                         <GitBranch className="h-2.5 w-2.5" />
+                         main
+                       </Badge>
+                       <span className="text-[10px] text-zinc-600 font-medium">Protected branch</span>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-end">
+                     <span className="text-xs font-bold text-white">4 open PRs</span>
+                     <span className="text-[10px] text-zinc-500 mt-0.5">23 commits this week</span>
+                  </div>
+               </div>
+
+               <div className="h-px bg-zinc-800/50 my-4" />
+
+               <div className="flex flex-col gap-3">
+                  {RECENT_PRs.map(pr => (
+                    <div key={pr.id} className="flex items-center justify-between group cursor-pointer">
+                      <div className="flex items-center gap-3">
+                        <GitPullRequest className="h-3.5 w-3.5 text-emerald-500" strokeWidth={1.5} />
+                        <div className="flex flex-col min-w-0">
+                           <div className="flex items-center gap-2">
+                              <span className="font-mono text-[11px] text-zinc-500">{pr.id}</span>
+                              <span className="text-xs font-medium text-zinc-300 group-hover:text-white transition-colors truncate">{pr.title}</span>
+                           </div>
                         </div>
-                        <span className="text-xs text-zinc-400">feat/stomp-broadcast</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Avatar className="h-5 w-5">
+                          <AvatarFallback className="bg-zinc-800 text-[8px] text-zinc-400 font-bold">{pr.author}</AvatarFallback>
+                        </Avatar>
+                        <span className="text-[10px] text-zinc-600 font-mono">{pr.time}</span>
                       </div>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2 pl-6 text-zinc-500">
-                    <GitCommit className="h-3.5 w-3.5" strokeWidth={1.5} />
-                    <span className="font-mono text-[11px]">a4f2e91</span>
-                    <span className="text-[11px] text-zinc-400 truncate">Add STOMP broker config</span>
-                  </div>
-                </div>
-              </div>
+                  ))}
+               </div>
 
-              {/* Activity Section */}
-              <div className="mt-2 flex flex-col gap-4">
-                <span className="text-[10px] font-bold text-zinc-500 tracking-widest uppercase">Activity</span>
-                <div className="relative pl-7 flex flex-col gap-6">
-                  <div className="absolute left-3 top-2 bottom-0 w-[1px] bg-zinc-800" />
-                  <div className="relative flex flex-col gap-1">
-                    <Avatar className="absolute -left-7 top-0 h-6 w-6 ring-4 ring-[#1B1B1D]">
-                      <AvatarFallback className="bg-zinc-800 text-[9px]">DK</AvatarFallback>
-                    </Avatar>
-                    <div className="flex items-start justify-between">
-                      <p className="text-xs text-zinc-300 leading-tight">
-                        <span className="font-semibold text-white">David K.</span> identified the leak in the Hike config
-                      </p>
-                      <span className="text-[10px] text-zinc-500 shrink-0 ml-4">2d ago</span>
-                    </div>
-                  </div>
-
-                  <div className="relative flex flex-col gap-1">
-                    <Avatar className="absolute -left-7 top-0 h-6 w-6 ring-4 ring-[#1B1B1D]">
-                      <AvatarFallback className="bg-zinc-800 text-[9px]">SM</AvatarFallback>
-                    </Avatar>
-                    <div className="flex items-start justify-between">
-                      <p className="text-xs text-zinc-300 leading-tight">
-                        <span className="font-semibold text-white">Sarah M.</span> assigned the task to Alex R.
-                      </p>
-                      <span className="text-[10px] text-zinc-500 shrink-0 ml-4">3d ago</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
+               <Button variant="ghost" className="w-full mt-4 h-8 text-[11px] font-semibold text-violet-400 hover:text-violet-300 hover:bg-violet-400/5 rounded-md">
+                 View all PRs <ArrowRight className="h-3 w-3 ml-1.5" />
+               </Button>
             </div>
-          </ScrollArea>
+          </section>
 
-          {/* Comment Input */}
-          <div className="p-4 bg-[#1B1B1D] border-t border-zinc-800/50 shrink-0">
-            <div className="relative flex items-center">
-              <input 
-                type="text" 
-                placeholder="Type a comment..." 
-                className="w-full bg-[#272629] border border-zinc-800/50 rounded-md px-3 py-2 text-sm text-[#E5E1E4] placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-[#7C5CFC]/50 transition-all pr-10"
-              />
-              <button className="absolute right-2 h-6 w-6 flex items-center justify-center bg-[#7C5CFC] text-white rounded hover:opacity-90 transition-opacity">
-                <ArrowRight strokeWidth={2} className="h-3.5 w-3.5" />
-              </button>
+          {/* Teams */}
+          <section className="flex flex-col">
+            <h3 className="text-xs font-bold tracking-widest text-zinc-600 uppercase mb-3">Teams</h3>
+            <div className="flex flex-col gap-2">
+              {TEAMS.map(team => (
+                <div key={team.name} className="bg-[#272629] p-3.5 rounded-lg border border-zinc-800/10 hover:border-zinc-700/50 transition-all cursor-pointer group shadow-lg shadow-black/10">
+                   <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                         <div className="h-9 w-9 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-500 group-hover:text-[#7C5CFC] transition-colors">
+                            <CheckSquare className="h-4 w-4" strokeWidth={1.5} />
+                         </div>
+                         <div className="flex flex-col">
+                            <span className="text-sm font-semibold text-[#E5E1E4]">{team.name}</span>
+                            <span className="text-[10px] text-zinc-500">{team.members} members</span>
+                         </div>
+                      </div>
+                      <div className="flex items-center">
+                         {team.initials.map((init, i) => (
+                           <Avatar key={init} className="h-6 w-6 ring-2 ring-[#272629] -ml-1.5 first:ml-0">
+                              <AvatarFallback className="bg-zinc-800 text-[8px] text-zinc-400 font-bold">{init}</AvatarFallback>
+                           </Avatar>
+                         ))}
+                      </div>
+                   </div>
+                </div>
+              ))}
             </div>
-          </div>
-        </SheetContent>
-      </Sheet>
+          </section>
 
-    </div>
+          {/* Stakeholder Share */}
+          <section className="flex flex-col">
+             <h3 className="text-xs font-bold tracking-widest text-zinc-600 uppercase mb-3">Stakeholder Share</h3>
+             <div className="bg-[#272629] rounded-lg p-5 border border-zinc-800/10 shadow-xl shadow-black/20">
+                <div className="flex items-center gap-2 mb-4">
+                   <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                   <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-widest">Public link active</span>
+                </div>
+                <div className="bg-zinc-950/50 border border-zinc-800 rounded px-3 py-2 flex items-center justify-between mb-4">
+                   <span className="font-mono text-xs text-zinc-600 truncate mr-4">hivespace.io/share/abc123xyz789</span>
+                   <button className="text-zinc-500 hover:text-white transition-colors">
+                      <PlusCircle className="h-3.5 w-3.5 rotate-45" strokeWidth={1.5} />
+                   </button>
+                </div>
+                <div className="flex items-center justify-between">
+                   <span className="text-[10px] text-zinc-600 font-medium">Viewed 12 times in last 7 days</span>
+                   <div className="flex gap-3">
+                      <button className="text-[11px] font-semibold text-zinc-400 hover:text-white transition-colors">Revoke</button>
+                      <button className="text-[11px] font-semibold text-violet-400 hover:text-white transition-colors">Copy link</button>
+                   </div>
+                </div>
+             </div>
+          </section>
+
+          {/* Settings Quick Access */}
+          <section className="flex flex-col">
+             <h3 className="text-xs font-bold tracking-widest text-zinc-600 uppercase mb-3 text-zinc-600">Settings</h3>
+             <div className="flex flex-col gap-1.5">
+                <QuickLink icon={UserPlus} label="Manage members" />
+                <QuickLink icon={Github} label="Linked repo: acme-corp/backend" />
+                <QuickLink icon={Zap} label="3 automation rules active" />
+             </div>
+          </section>
+
+        </div>
+      </div>
+    </ScrollArea>
   );
 }
 
-// --- SUB-COMPONENTS ---
+// --- SMALL UI COMPONENT HELPERS ---
 
-function TaskCard({ task, isMuted, onClick }: { task: Task; isMuted?: boolean; onClick: () => void }) {
-  const isDone = isMuted;
-
-  return (
-    <div 
-      onClick={onClick}
-      className={`group relative flex flex-col gap-2.5 bg-[#272629] p-3 rounded-md border border-zinc-800/50 hover:bg-zinc-700/20 cursor-pointer transition-all ${isDone ? 'opacity-50' : ''} ${task.inProgress ? 'border-l-2 border-l-[#7C5CFC]' : ''}`}
-    >
-      {/* Row 1: Priority & ID */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="h-1 w-1 rounded-full shrink-0" style={{ backgroundColor: PRIORITIES[task.priority] }} />
-          <span className="font-mono text-[10px] text-zinc-500 tracking-tight">{task.id}</span>
-        </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="opacity-0 group-hover:opacity-100 h-5 w-5 flex items-center justify-center text-zinc-600 hover:text-zinc-400 transition-all rounded">
-              <MoreHorizontal strokeWidth={1.5} className="h-4 w-4" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-[#201F21] border-zinc-800 text-zinc-300">
-            <DropdownMenuItem className="focus:bg-zinc-800 focus:text-white">Edit Task</DropdownMenuItem>
-            <DropdownMenuItem className="focus:bg-zinc-800 focus:text-white text-red-400">Delete</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-
-      {/* Row 2: Title */}
-      <p className={`text-sm leading-snug font-medium line-clamp-2 overflow-hidden text-ellipsis ${isDone ? 'line-through text-zinc-500' : 'text-[#E5E1E4]'}`}>
-        {task.title}
-      </p>
-
-      {/* Row 3: Labels */}
-      {task.labels && task.labels.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
-          {task.labels.slice(0, 2).map(label => (
-            <Badge key={label} className="bg-zinc-800 text-zinc-400 border border-zinc-700 h-5 px-1.5 py-0.5 font-normal text-xs rounded-sm hover:bg-zinc-800 shadow-none">
-              {label}
-            </Badge>
-          ))}
-          {task.labels.length > 2 && (
-            <Badge className="bg-zinc-800 text-zinc-400 border border-zinc-700 h-5 px-1.5 py-0.5 font-normal text-xs rounded-sm hover:bg-zinc-800 shadow-none">
-              +{task.labels.length - 2} more
-            </Badge>
-          )}
-        </div>
-      )}
-
-      {/* Row 4: Bottom Metadata */}
-      <div className="flex items-center justify-between mt-1">
-        <div className="flex items-center gap-3">
-          {task.dueDate && (
-            <div className={`flex items-center gap-1 text-[10px] ${task.overdue ? 'text-red-400' : task.dueToday ? 'text-amber-400' : 'text-zinc-500'}`}>
-              <Calendar strokeWidth={1.5} className="h-3 w-3" />
-              <span className="font-medium">{task.dueDate}</span>
-            </div>
-          )}
-          {task.pr && (
-            <div className="flex items-center gap-1 text-[10px] text-zinc-500 hover:text-emerald-500 transition-colors">
-              <GitPullRequest strokeWidth={1.5} className="h-3 w-3" />
-              <span className="font-mono">{task.pr}</span>
-            </div>
-          )}
-        </div>
-
-        {/* Assignee Avatar - Positioned Bottom Right */}
-        <div className="absolute bottom-3 right-3 shrink-0">
-          <TooltipProvider delayDuration={200}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Avatar className={`h-6 w-6 rounded-full border-none ${ASSIGNEE_COLORS[task.assignee.initials] || 'bg-zinc-800'}`}>
-                  <AvatarFallback className="bg-transparent text-white text-xs font-bold">{task.assignee.initials}</AvatarFallback>
-                </Avatar>
-              </TooltipTrigger>
-              <TooltipContent className="bg-black text-[10px] border-zinc-800">{task.assignee.name}</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-      </div>
-    </div>
-  );
+function ArrowRight({ className, ...props }: any) {
+  return <ChevronRight className={cn("h-3 w-3", className)} {...props} />
 }
 
-function MetadataRow({ label, children }: { label: string; children: React.ReactNode }) {
+function QuickLink({ icon: Icon, label }: { icon: any; label: string }) {
   return (
-    <div className="flex items-center py-2.5">
-      <span className="w-28 shrink-0 text-zinc-500 font-normal">{label}</span>
-      <div className="flex-1 min-w-0">
-        {children}
-      </div>
+    <div className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-white/5 transition-all group cursor-pointer">
+      <Icon className="h-3.5 w-3.5 text-zinc-500 group-hover:text-violet-400 transition-colors" strokeWidth={1.5} />
+      <span className="text-xs text-zinc-400 group-hover:text-zinc-200 transition-colors">{label}</span>
+      <ChevronRight className="h-3 w-3 ml-auto text-zinc-800 group-hover:text-zinc-600 transition-all group-hover:translate-x-0.5" strokeWidth={2} />
     </div>
-  );
+  )
 }

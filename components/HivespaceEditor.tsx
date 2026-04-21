@@ -232,47 +232,20 @@ export function HivespaceEditor({
     <div className="relative h-full w-full">
       {/* SELECTION BUBBLE MENU */}
       {editor && (
-        <BubbleMenu editor={editor}>
-          <div className="flex animate-in items-center gap-1 rounded-md border border-zinc-700 bg-zinc-900 px-1.5 py-1.5 shadow-2xl duration-200 zoom-in-95 fade-in">
-            <MenuButton
-              active={editor.isActive("bold")}
-              onClick={() => editor.chain().focus().toggleBold().run()}
-              icon={Bold}
-            />
-            <MenuButton
-              active={editor.isActive("italic")}
-              onClick={() => editor.chain().focus().toggleItalic().run()}
-              icon={Italic}
-            />
-            <div className="mx-1 h-4 w-px bg-zinc-800" />
-            <MenuButton
-              active={editor.isActive("heading", { level: 1 })}
-              onClick={() =>
-                editor.chain().focus().toggleHeading({ level: 1 }).run()
-              }
-              icon={Heading1}
-            />
-            <MenuButton
-              active={editor.isActive("heading", { level: 2 })}
-              onClick={() =>
-                editor.chain().focus().toggleHeading({ level: 2 }).run()
-              }
-              icon={Heading2}
-            />
-            <div className="mx-1 h-4 w-px bg-zinc-800" />
-            <MenuButton
-              active={editor.isActive("codeBlock")}
-              onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-              icon={CodeIcon}
-            />
-            <MenuButton
-              active={editor.isActive("link")}
-              onClick={() => {
-                const url = window.prompt("URL")
-                if (url) editor.chain().focus().setLink({ href: url }).run()
-              }}
-              icon={Link2}
-            />
+        /* @ts-ignore */
+        <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
+          <div className="bg-zinc-900 border border-zinc-700 rounded-md shadow-2xl px-1.5 py-1.5 flex gap-1 items-center animate-in fade-in zoom-in-95 duration-200">
+            <MenuButton active={editor.isActive("bold")} onClick={() => editor.chain().focus().toggleBold().run()} icon={Bold} />
+            <MenuButton active={editor.isActive("italic")} onClick={() => editor.chain().focus().toggleItalic().run()} icon={Italic} />
+            <div className="w-px h-4 bg-zinc-800 mx-1" />
+            <MenuButton active={editor.isActive("heading", { level: 1 })} onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} icon={Heading1} />
+            <MenuButton active={editor.isActive("heading", { level: 2 })} onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} icon={Heading2} />
+            <div className="w-px h-4 bg-zinc-800 mx-1" />
+            <MenuButton active={editor.isActive("codeBlock")} onClick={() => editor.chain().focus().toggleCodeBlock().run()} icon={CodeIcon} />
+            <MenuButton active={editor.isActive("link")} onClick={() => {
+              const url = window.prompt("URL");
+              if (url) editor.chain().focus().setLink({ href: url }).run();
+            }} icon={Link2} />
           </div>
         </BubbleMenu>
       )}

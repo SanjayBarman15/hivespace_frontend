@@ -41,9 +41,12 @@ export function NavRail() {
     { name: "Chat", href: "/dashboard/chat/backend-ops", icon: MessageSquare },
     { name: "Docs", href: "/dashboard/docs", icon: BookOpen },
     { name: "GitHub", href: "/dashboard/github", icon: GitGraph },
-    { name: "Mail", href: "/mail", icon: Mail, soon: true },
+    { name: "Mail", href: "/dashboard/mail", icon: Mail },
     { name: "AI Assistant", href: "/dashboard/ai", icon: Sparkles },
-  ]
+  ] as const;
+
+  type NavItem = typeof navItems[number] & { soon?: boolean; badge?: string };
+  const items = navItems as unknown as NavItem[];
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -82,7 +85,7 @@ export function NavRail() {
 
         {/* Middle Section */}
         <div className="mt-4 flex w-full flex-1 flex-col items-center gap-2 overflow-y-auto px-2">
-          {navItems.map((item) => {
+          {items.map((item) => {
             const isActive =
               pathname === item.href || pathname.startsWith(`${item.href}/`);
             const Icon = item.icon;

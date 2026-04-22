@@ -1,6 +1,13 @@
-"use client"
-
-import { Search, UserPlus, MoreHorizontal, Mail } from "lucide-react"
+import { 
+  Search, 
+  UserPlus, 
+  MoreHorizontal, 
+  Mail, 
+  Link as LinkIcon, 
+  ExternalLink, 
+  RefreshCw, 
+  Plus 
+} from "lucide-react"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -12,6 +19,13 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { CTAButton } from "@/components/CTAButton"
 import { cn } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
+import { Switch } from "@/components/ui/switch"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 
 const members = [
   { id: 1, name: "JD", fullName: "John Doe", email: "john@acme.com", role: "Org Owner", status: "online", joined: "Jan 12", isYou: true },
@@ -29,6 +43,12 @@ const pendingInvites = [
   { email: "pm@acme.com", role: "Project Lead", expires: "12h" },
 ]
 
+const inviteLinks = [
+  { id: 1, role: "Member", used: 3, createdBy: "JD", status: "Active", url: "hivespace.io/invite/xK9mP2...", expires: "Apr 22, 2026", daysLeft: 3, maxUses: "Unlimited" },
+  { id: 2, role: "Viewer", used: 0, createdBy: "MV", status: "Active", url: "hivespace.io/invite/qR7nL5...", expires: "Apr 20, 2026", daysLeft: 1, maxUses: "10 (0 used)" },
+  { id: 3, role: "Team Lead", used: 1, createdBy: "JD", status: "Expired", url: "hivespace.io/invite/mT3kJ8...", expires: "Apr 8, 2026", daysLeft: 0, maxUses: "5 (1 used)" },
+]
+
 const roleColors: Record<string, string> = {
   "Org Owner": "text-[#7C5CFC] bg-[#7C5CFC]/10 border-[#7C5CFC]/20",
   "Org Admin": "text-blue-400 bg-blue-400/10 border-blue-400/20",
@@ -38,6 +58,8 @@ const roleColors: Record<string, string> = {
   "Viewer": "text-zinc-500 bg-zinc-800 border-zinc-700",
   "Billing Admin": "text-green-400 bg-green-400/10 border-green-400/20",
 }
+
+import { InviteModal } from "@/components/InviteModal"
 
 export default function MembersSettings() {
   return (
@@ -67,10 +89,14 @@ export default function MembersSettings() {
             <SelectItem value="member">Member</SelectItem>
           </SelectContent>
         </Select>
-        <CTAButton className="ml-auto flex items-center gap-2">
-          <UserPlus className="h-3.5 w-3.5" />
-          Invite Member
-        </CTAButton>
+        <div className="ml-auto">
+          <InviteModal trigger={
+            <CTAButton className="flex items-center gap-2">
+              <UserPlus className="h-3.5 w-3.5" />
+              Invite Member
+            </CTAButton>
+          } />
+        </div>
       </div>
 
       <div className="space-y-1">
@@ -150,6 +176,150 @@ export default function MembersSettings() {
             </div>
           ))}
         </div>
+      </div>
+
+      <div className="mt-10">
+        <h3 className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-3 px-4">
+          INVITE LINKS
+        </h3>
+        <p className="text-xs text-zinc-400 mb-6 px-4">
+          Share these links to let people join without sending individual emails. Anyone with the link can join with the assigned role.
+        </p>
+        
+        <div className="space-y-3">
+          {inviteLinks.map((link) => (
+            <div 
+              key={link.id} 
+              className={cn(
+                "bg-[#272629] border border-zinc-800/50 rounded-lg p-4 group",
+                link.status === "Expired" && "opacity-60"
+              )}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <LinkIcon className="h-3.5 w-3.5 text-zinc-400" />
+                  <Badge variant="outline" className="bg-zinc-800 border-zinc-700 text-xs font-medium px-2 py-0.5 text-zinc-300 rounded-sm">
+                    {link.role}
+                  </Badge>
+                  <span className="text-xs text-zinc-500 ml-3 font-medium">Used {link.used} times</span>
+                  <span className="text-xs text-zinc-600">by {link.createdBy}</span>
+                </div>
+                <Badge className={cn(
+                  "text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm border",
+                  link.status === "Active" 
+                    ? "bg-green-500/10 border-green-500/20 text-green-400" 
+                    : "bg-zinc-800 border-zinc-700 text-zinc-600"
+                )}>
+                  {link.status}
+                </Badge>
+              </div>
+
+              <div className="flex items-center gap-2 mt-3">
+                <div className="bg-zinc-800 rounded px-2 py-1 flex-1 min-w-0">
+                  <p className="font-mono text-[10px] text-zinc-400 truncate">
+                    {link.url}
+                  </p>
+                </div>
+                <button className="text-[10px] font-bold text-[#7C5CFC] uppercase tracking-wider hover:opacity-80 transition-opacity ml-2 shrink-0">
+                  Copy
+                </button>
+                <button className="p-1 text-zinc-500 hover:text-zinc-300 transition-colors shrink-0">
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </button>
+              </div>
+
+              <div className="mt-4 flex items-center gap-5 text-[10px] font-medium text-zinc-600">
+                <div className="flex items-center gap-1.5">
+                  <span className={cn(link.daysLeft === 1 && "text-amber-500")}>
+                    Expires: {link.expires} · {link.daysLeft === 0 ? "Expired" : `${link.daysLeft} days left`}
+                  </span>
+                </div>
+                <span>Max uses: {link.maxUses}</span>
+                <button className="flex items-center gap-1.5 hover:text-zinc-400 transition-colors">
+                  <RefreshCw className="h-3 w-3" />
+                  Regenerate
+                </button>
+                <button className={cn(
+                  "hover:text-red-400 transition-colors",
+                  link.status === "Active" ? "text-red-400/60" : "text-zinc-700 cursor-not-allowed"
+                )}>
+                  Deactivate
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <Popover>
+          <PopoverTrigger asChild>
+            <button className="mt-4 w-full h-11 flex items-center justify-center gap-2 border border-dashed border-zinc-700 rounded-lg text-xs text-zinc-400 hover:border-zinc-600 hover:text-zinc-300 transition-all">
+              <Plus className="h-3.5 w-3.5" />
+              Create invite link
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="bg-zinc-900 border border-zinc-700 rounded-lg p-4 w-72 shadow-2xl">
+            <h3 className="text-sm font-medium text-[#E5E1E4] mb-4">Create Invite Link</h3>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2 block">
+                  Invite as
+                </label>
+                <Select defaultValue="Member">
+                  <SelectTrigger className="w-full bg-zinc-800 border-zinc-700 h-9 text-xs text-zinc-300">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-zinc-900 border-zinc-700 text-zinc-300">
+                    <SelectItem value="Member">Member</SelectItem>
+                    <SelectItem value="Workspace Admin">Workspace Admin</SelectItem>
+                    <SelectItem value="Team Lead">Team Lead</SelectItem>
+                    <SelectItem value="Viewer">Viewer</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2 block">
+                  Expires in
+                </label>
+                <Select defaultValue="72h">
+                  <SelectTrigger className="w-full bg-zinc-800 border-zinc-700 h-9 text-xs text-zinc-300">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-zinc-900 border-zinc-700 text-zinc-300">
+                    <SelectItem value="24h">24 hours</SelectItem>
+                    <SelectItem value="72h">72 hours</SelectItem>
+                    <SelectItem value="7d">7 days</SelectItem>
+                    <SelectItem value="30d">30 days</SelectItem>
+                    <SelectItem value="never">Never</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest block">
+                  Limit uses
+                </label>
+                <Switch className="data-[state=checked]:bg-[#7C5CFC]" />
+              </div>
+
+              <div>
+                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2 block">
+                  Max uses
+                </label>
+                <Input 
+                  type="number" 
+                  defaultValue={10}
+                  className="bg-zinc-800 border-zinc-700 h-9 text-xs w-24 focus-visible:ring-[#7C5CFC]/30"
+                />
+              </div>
+
+              <CTAButton className="w-full h-10 mt-2">
+                Generate Link
+              </CTAButton>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
     </div>
   )

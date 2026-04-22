@@ -12,7 +12,6 @@ Directory structure:
     ├── next.config.mjs
     ├── package.json
     ├── postcss.config.mjs
-    ├── proxy.ts
     ├── tsconfig.json
     ├── .env.example
     ├── .prettierignore
@@ -103,18 +102,6 @@ Directory structure:
     │   │   └── signup/
     │   │       └── page.tsx
     │   └── api/
-    │       ├── auth.ts
-    │       ├── channels.ts
-    │       ├── client.ts
-    │       ├── documents.ts
-    │       ├── github.ts
-    │       ├── invites.ts
-    │       ├── messages.ts
-    │       ├── orgs.ts
-    │       ├── projects.ts
-    │       ├── tasks.ts
-    │       ├── uploads.ts
-    │       ├── workspaces.ts
     │       ├── auth/
     │       │   ├── callback/
     │       │   │   └── route.ts
@@ -213,7 +200,20 @@ Directory structure:
     │   ├── constants.ts
     │   ├── utils.ts
     │   ├── websocket.ts
-    │   └── .gitkeep
+    │   ├── .gitkeep
+    │   └── api/
+    │       ├── auth.ts
+    │       ├── channels.ts
+    │       ├── client.ts
+    │       ├── documents.ts
+    │       ├── github.ts
+    │       ├── invites.ts
+    │       ├── messages.ts
+    │       ├── orgs.ts
+    │       ├── projects.ts
+    │       ├── tasks.ts
+    │       ├── uploads.ts
+    │       └── workspaces.ts
     ├── public/
     │   └── .gitkeep
     ├── store/

@@ -11,9 +11,10 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const isMail = pathname?.startsWith("/dashboard/mail");
   const isDocs = pathname?.startsWith("/dashboard/docs");
   const isInbox = pathname?.startsWith("/dashboard/inbox");
-  const hideSidebar = isDocs || isInbox;
+  const hideSidebar = isDocs || isInbox || isMail;
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#0E0E10] text-[#E5E1E4]">

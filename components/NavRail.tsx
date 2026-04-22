@@ -41,7 +41,7 @@ export function NavRail() {
     { name: "Chat", href: "/dashboard/chat/backend-ops", icon: MessageSquare },
     { name: "Docs", href: "/dashboard/docs", icon: BookOpen },
     { name: "GitHub", href: "/dashboard/github", icon: GitGraph },
-    { name: "Mail", href: "/mail", icon: Mail, soon: true },
+    { name: "Mail", href: "/dashboard/mail", icon: Mail },
     { name: "AI Assistant", href: "/dashboard/ai", icon: Sparkles },
   ]
 

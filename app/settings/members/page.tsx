@@ -39,6 +39,8 @@ const roleColors: Record<string, string> = {
   "Billing Admin": "text-green-400 bg-green-400/10 border-green-400/20",
 }
 
+import { InviteModal } from "@/components/InviteModal"
+
 export default function MembersSettings() {
   return (
     <div className="max-w-4xl px-8 py-6">
@@ -67,10 +69,14 @@ export default function MembersSettings() {
             <SelectItem value="member">Member</SelectItem>
           </SelectContent>
         </Select>
-        <CTAButton className="ml-auto flex items-center gap-2">
-          <UserPlus className="h-3.5 w-3.5" />
-          Invite Member
-        </CTAButton>
+        <div className="ml-auto">
+          <InviteModal trigger={
+            <CTAButton className="flex items-center gap-2">
+              <UserPlus className="h-3.5 w-3.5" />
+              Invite Member
+            </CTAButton>
+          } />
+        </div>
       </div>
 
       <div className="space-y-1">

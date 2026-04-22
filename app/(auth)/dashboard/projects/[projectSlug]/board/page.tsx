@@ -36,6 +36,7 @@ import {
   DropdownMenuItem
 } from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useParams } from "next/navigation";
 
 // --- TYPES & CONSTANTS ---
 
@@ -105,6 +106,13 @@ const COLUMNS = [
 ];
 
 export default function SprintThreeBoardPage() {
+  const params = useParams();
+  const projectSlug = params?.projectSlug as string || "sprint-3";
+  const displayTitle = projectSlug
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [editedTitle, setEditedTitle] = useState("");
 
@@ -125,10 +133,10 @@ export default function SprintThreeBoardPage() {
           <span className="text-zinc-600">/</span>
           <span className="text-xs text-zinc-400">Engineering</span>
           <span className="text-zinc-600">/</span>
-          <span className="text-xs font-medium text-white">Sprint 3</span>
+          <span className="text-xs font-medium text-white">{displayTitle}</span>
           
           <div className="ml-3 flex items-center rounded-md bg-zinc-800 px-2 py-0.5 text-[10px] text-zinc-400 font-medium">
-            Sprint 3 · Apr 1–15
+            {displayTitle} · Apr 1–15
           </div>
         </div>
 
@@ -182,7 +190,7 @@ export default function SprintThreeBoardPage() {
         {/* Sprint Progress Bar */}
         <div className="flex flex-col px-8 py-5 shrink-0 gap-2.5">
           <div className="flex items-baseline gap-3">
-            <h1 className="text-sm font-medium text-[#E5E1E4]">Sprint 3</h1>
+            <h1 className="text-sm font-medium text-[#E5E1E4]">{displayTitle}</h1>
             <span className="text-xs text-zinc-400">Apr 1 – Apr 15, 2026</span>
           </div>
           <div className="flex items-center gap-4">
@@ -310,7 +318,7 @@ export default function SprintThreeBoardPage() {
                 </MetadataRow>
 
                 <MetadataRow label="Sprint">
-                  <span className="text-[#7C5CFC] font-medium cursor-pointer hover:underline underline-offset-2 transition-all">Sprint 3</span>
+                  <span className="text-[#7C5CFC] font-medium cursor-pointer hover:underline underline-offset-2 transition-all">{displayTitle}</span>
                 </MetadataRow>
 
                 <MetadataRow label="Labels">

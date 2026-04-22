@@ -3,7 +3,7 @@
 import { Crown, Users } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-export function TeamHeader() {
+export function TeamHeader({ teamName }: { teamName: string }) {
   return (
     <div className="flex w-full flex-col bg-[#201F21] p-6">
       <div className="flex items-start justify-between">
@@ -12,7 +12,7 @@ export function TeamHeader() {
             <Users className="h-6 w-6 text-blue-400" />
           </div>
           <div className="flex flex-col">
-            <h1 className="text-xl font-semibold text-[#E5E1E4]">Backend Team</h1>
+            <h1 className="text-xl font-semibold text-[#E5E1E4]">{teamName}</h1>
             <p className="mt-1 text-xs text-zinc-500 uppercase tracking-wider">Engineering workspace</p>
             <p className="mt-2 max-w-xl text-sm text-zinc-400 leading-relaxed">
               Responsible for all server-side infrastructure, APIs, WebSocket, and GitHub integrations.

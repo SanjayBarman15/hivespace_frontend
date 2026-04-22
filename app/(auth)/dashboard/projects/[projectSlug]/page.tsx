@@ -29,6 +29,7 @@ import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
 // --- MOCK DATA ---
 
@@ -58,6 +59,13 @@ const TEAMS = [
 ];
 
 export default function ProjectOverviewPage() {
+  const params = useParams();
+  const projectSlug = params?.projectSlug as string || "sprint-3";
+  const displayTitle = projectSlug
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+
   return (
     <ScrollArea className="h-screen w-full bg-[#0E0E10] text-[#E5E1E4]">
       {/* ─── TOP BAR ─── */}
@@ -67,15 +75,15 @@ export default function ProjectOverviewPage() {
           <span className="text-zinc-800 text-[10px]">/</span>
           <span className="text-xs text-zinc-500">Engineering</span>
           <span className="text-zinc-800 text-[10px]">/</span>
-          <span className="text-xs font-medium text-white">Sprint 3</span>
+          <span className="text-xs font-medium text-white">{displayTitle}</span>
         </div>
 
         <nav className="flex h-full items-center gap-6">
-          <Link href="/dashboard/projects/sprint-3" className="relative flex h-full items-center px-1 text-sm font-medium text-white">
+          <Link href={`/dashboard/projects/${projectSlug}`} className="relative flex h-full items-center px-1 text-sm font-medium text-white">
             Overview
             <div className="absolute bottom-0 left-0 h-[2px] w-full bg-[#7C5CFC]" />
           </Link>
-          <Link href="/dashboard/projects/sprint-3/board" className="flex h-full items-center px-1 text-sm font-medium text-zinc-500 hover:text-zinc-300 transition-colors">
+          <Link href={`/dashboard/projects/${projectSlug}/board`} className="flex h-full items-center px-1 text-sm font-medium text-zinc-500 hover:text-zinc-300 transition-colors">
             Board
           </Link>
           <button className="flex h-full items-center px-1 text-sm font-medium text-zinc-500 hover:text-zinc-300 transition-colors">
@@ -111,7 +119,7 @@ export default function ProjectOverviewPage() {
               ⚡
             </div>
             <div className="flex flex-col gap-1">
-              <h1 className="text-3xl font-bold tracking-tight text-[#E5E1E4]">Sprint 3</h1>
+              <h1 className="text-3xl font-bold tracking-tight text-[#E5E1E4]">{displayTitle}</h1>
               <p className="text-xs font-medium text-zinc-500">Engineering workspace</p>
               <p className="text-sm text-zinc-400 mt-2 max-w-2xl leading-relaxed">
                 Core backend infrastructure sprint — WebSocket, Auth, GitHub integration, and Docs editor. 
@@ -213,7 +221,7 @@ export default function ProjectOverviewPage() {
           <section className="flex flex-col">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xs font-bold tracking-widest text-zinc-600 uppercase">Recent Tasks</h3>
-              <Link href="/dashboard/projects/sprint-3/board" className="text-[11px] font-semibold text-violet-400 hover:text-violet-300 transition-colors flex items-center gap-1 group">
+              <Link href={`/dashboard/projects/${projectSlug}/board`} className="text-[11px] font-semibold text-violet-400 hover:text-violet-300 transition-colors flex items-center gap-1 group">
                 View board <ChevronRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
               </Link>
             </div>

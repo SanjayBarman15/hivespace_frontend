@@ -45,18 +45,26 @@ import { MembersTab } from "@/components/teams/MembersTab";
 import { TasksTab } from "@/components/teams/TasksTab";
 import { ChannelsTab } from "@/components/teams/ChannelsTab";
 import { ManageTeamSheet } from "@/components/teams/ManageTeamSheet";
+import { useParams } from "next/navigation";
 
 export default function BackendTeamPage() {
+  const params = useParams();
+  const teamSlug = params?.teamSlug as string || "backend";
+  const displayTitle = teamSlug
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ") + " Team";
+
   const [activeTab, setActiveTab] = useState("overview");
 
   return (
     <div className="flex h-screen flex-col bg-[#201F21] text-[#E5E1E4] overflow-hidden">
       {/* TOP BREADCRUMB BAR */}
-      <TeamBreadcrumbs />
+      <TeamBreadcrumbs teamName={displayTitle} />
 
       <div className="flex-1 flex flex-col overflow-y-auto">
         {/* TEAM HEADER SECTION */}
-        <TeamHeader />
+        <TeamHeader teamName={displayTitle} />
 
         {/* TAB NAVIGATION */}
         <Tabs defaultValue="overview" className="w-full" onValueChange={setActiveTab}>

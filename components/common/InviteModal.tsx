@@ -28,7 +28,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { CTAButton } from "@/components/CTAButton"
+import { CTAButton } from "@/components/common/CTAButton"
 import { cn } from "@/lib/utils"
 
 interface InviteModalProps {

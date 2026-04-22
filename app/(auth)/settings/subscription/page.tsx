@@ -16,7 +16,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { CTAButton } from "@/components/CTAButton"
+import { CTAButton } from "@/components/common/CTAButton"
 import { cn } from "@/lib/utils"
 
 const SEATS = [

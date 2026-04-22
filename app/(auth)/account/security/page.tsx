@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Shield, Monitor, Smartphone, Globe, Info } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import { CTAButton } from "@/components/CTAButton"
+import { CTAButton } from "@/components/common/CTAButton"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"

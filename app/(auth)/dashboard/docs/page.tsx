@@ -39,7 +39,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
-import { HivespaceEditor } from "@/components/HivespaceEditor"
+import { HivespaceEditor } from "@/components/features/docs/HivespaceEditor"
 
 // --- MOCK DATA ---
 

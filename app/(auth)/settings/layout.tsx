@@ -1,5 +1,5 @@
-import { NavRail } from "@/components/NavRail"
-import { SettingsSidebar } from "@/components/SettingsSidebar"
+import { NavRail } from "@/components/layout/NavRail"
+import { SettingsSidebar } from "@/components/layout/SettingsSidebar"
 
 export default function SettingsLayout({
   children,

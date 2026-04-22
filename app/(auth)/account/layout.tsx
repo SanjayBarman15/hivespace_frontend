@@ -1,5 +1,5 @@
-import { NavRail } from "@/components/NavRail"
-import { AccountSidebar } from "@/components/AccountSidebar"
+import { NavRail } from "@/components/layout/NavRail"
+import { AccountSidebar } from "@/components/layout/AccountSidebar"
 
 export default function AccountLayout({
   children,

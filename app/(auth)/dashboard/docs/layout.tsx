@@ -1,6 +1,6 @@
 "use client";
 
-import { DocSidebar } from "@/components/DocSidebar";
+import { DocSidebar } from "@/components/layout/DocSidebar";
 
 export default function DocsLayout({
   children,

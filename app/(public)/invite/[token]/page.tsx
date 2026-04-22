@@ -19,7 +19,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
-import { CTAButton } from "@/components/CTAButton"
+import { CTAButton } from "@/components/common/CTAButton"
 import { cn } from "@/lib/utils"
 
 type UIState = "VALID_LOGGED_OUT" | "VALID_LOGGED_IN" | "INVALID" | "SUCCESS"

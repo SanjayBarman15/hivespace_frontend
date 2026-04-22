@@ -38,13 +38,13 @@ import {
 import { cn } from "@/lib/utils";
 
 // Components
-import { TeamBreadcrumbs } from "@/components/teams/TeamBreadcrumbs";
-import { TeamHeader } from "@/components/teams/TeamHeader";
-import { OverviewTab } from "@/components/teams/OverviewTab";
-import { MembersTab } from "@/components/teams/MembersTab";
-import { TasksTab } from "@/components/teams/TasksTab";
-import { ChannelsTab } from "@/components/teams/ChannelsTab";
-import { ManageTeamSheet } from "@/components/teams/ManageTeamSheet";
+import { TeamBreadcrumbs } from "@/components/features/teams/TeamBreadcrumbs";
+import { TeamHeader } from "@/components/features/teams/TeamHeader";
+import { OverviewTab } from "@/components/features/teams/OverviewTab";
+import { MembersTab } from "@/components/features/teams/MembersTab";
+import { TasksTab } from "@/components/features/teams/TasksTab";
+import { ChannelsTab } from "@/components/features/teams/ChannelsTab";
+import { ManageTeamSheet } from "@/components/features/teams/ManageTeamSheet";
 import { useParams } from "next/navigation";
 
 export default function BackendTeamPage() {

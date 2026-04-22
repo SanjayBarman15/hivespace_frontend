@@ -1,7 +1,7 @@
 "use client"
 
 import { GitGraph as Github, Mail, ExternalLink } from "lucide-react"
-import { CTAButton } from "@/components/CTAButton"
+import { CTAButton } from "@/components/common/CTAButton"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 

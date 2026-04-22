@@ -1,8 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { NavRail } from "@/components/NavRail";
-import { WorkspaceSidebar } from "@/components/WorkspaceSidebar";
+import { NavRail } from "@/components/layout/NavRail";
+import { WorkspaceSidebar } from "@/components/layout/WorkspaceSidebar";
 import { cn } from "@/lib/utils";
 
 export default function DashboardLayout({

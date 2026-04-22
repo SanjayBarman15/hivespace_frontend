@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { CTAButton } from "@/components/CTAButton"
+import { CTAButton } from "@/components/common/CTAButton"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Switch } from "@/components/ui/switch"
@@ -59,7 +59,7 @@ const roleColors: Record<string, string> = {
   "Billing Admin": "text-green-400 bg-green-400/10 border-green-400/20",
 }
 
-import { InviteModal } from "@/components/InviteModal"
+import { InviteModal } from "@/components/common/InviteModal"
 
 export default function MembersSettings() {
   return (

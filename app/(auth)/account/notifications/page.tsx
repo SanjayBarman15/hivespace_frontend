@@ -1,6 +1,6 @@
 "use client"
 
-import SettingsPlaceholder from "@/components/SettingsPlaceholder"
+import SettingsPlaceholder from "@/components/features/settings/SettingsPlaceholder"
 
 export default function UserNotificationsPage() {
   return (
